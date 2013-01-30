@@ -29,7 +29,9 @@ void Plot::plot()
 	
 	//! on lance la commande plot
 	fflush (m_gnuPlot);
-	fprintf(m_gnuPlot, "plot \"graphe.data\" with lines\n");
+	fprintf(m_gnuPlot, "set boxwidth 0.9 relative\n");
+	fprintf(m_gnuPlot, "set style fill 1.0 \n");
+	fprintf(m_gnuPlot, "plot \"graphe.data\" with boxes\n");
 	fflush (m_gnuPlot);
 
 }
@@ -57,16 +59,61 @@ void Plot::plotOrderBook(	const std::vector<int> & x,
 				   const std::vector<int> & y,int last)
 {
 	std::ofstream outFile("OrderBook.data");
-	for(unsigned int i=0;i<x.size();i++)
+	int index(0);
+		
+	//outFile<<pold/100.0<<'\t'<<y[std::max(index-20,0)]<<'\n';
+	
+	std::vector<int> x2;
+	std::vector<int> y2;
+	x2.push_back(x[0]);
+	y2.push_back(y[0]);
+	int pold(x[0]);
+	for(unsigned int i=1;i<x.size();i++) //
 	{
-		outFile<<x[i]/100.0<<'\t'<<y[i]<<'\n';
+		if(x[i] != pold+1) {
+			//outFile<<(pold+1)/100.0<<'\t'<<0<<'\n';
+			x2.push_back(pold+1);
+			y2.push_back(0);
+			pold = pold+1;
+			i--;
+		}else{
+			//outFile<<x[i]/100.0<<'\t'<<y[i]<<'\n';
+			x2.push_back(x[i]);
+			y2.push_back(y[i]);
+			pold = x[i];
+		}
 	}
+	while(y2[index] - y2[index+1] >= y2[index]){
+			index++;
+	}
+	
+	pold=x2[std::max(index-20,0)];
+	for(unsigned int i=std::max(index-20+1,1);i<std::min(index+21,(int)x2.size());i++){
+		if(x2[i] != pold+1) {
+			outFile<<(pold+1)/100.0<<'\t'<<0<<'\n';
+			pold = pold+1;
+			i--;
+		}else{
+			outFile<<x2[i]/100.0<<'\t'<<y2[i]<<'\n';
+			pold = x2[i];
+		}
+	}
+
 	outFile.close();
 	
 	//! on lance la commande plot
 	fflush (m_gnuPlot);
+	fprintf(m_gnuPlot, "set boxwidth 0.7 relative\n");
+	fprintf(m_gnuPlot, "set grid\n");
+	
+	fprintf(m_gnuPlot, "set style fill solid 2.0 \n");
 	fprintf(m_gnuPlot, "set title \"Last Price = %f\"\n",  (double)last/100.0);
-	fprintf(m_gnuPlot, "plot \"OrderBook.data\" with boxes\n");
+	fprintf(m_gnuPlot, "set color 1:($2 > 0 ? magenta:blue) \n");
+	fprintf(m_gnuPlot, "plot \"OrderBook.data\" using 1:($2 != 0 ? $2 : 1/0) , using 1:($2 < 0 ? $2 : $2 ) lc rgb \"blue\" , using 1:($2 < 0 ? $2 : $2 ) lc rgb \"red\" with boxes  \n");
+	fprintf(m_gnuPlot, "set zeroaxis\n");
+	fprintf(m_gnuPlot, "set key font 0.01 \n");
+	fprintf(m_gnuPlot, "set xtics axis 0.02\n");
+	fprintf(m_gnuPlot,"plot \"OrderBook.data\" using 1:($2 != 0 ? $2 : 1/0) ,\'\' using 1:($2 < 0? $2 : 1/0 ) lc rgb \"blue\" with boxes,\'\' using 1:($2 > 0 ? $2 : 1/0 ) lc rgb \"magenta\"  with boxes \n");
 	fflush (m_gnuPlot);
 
 }
