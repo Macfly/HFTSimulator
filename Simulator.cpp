@@ -35,7 +35,7 @@ int storedDepth = 1;
 
 // Parameters for the liquidity provider
 double meanActionTimeLP = 0.35;
-int meanVolumeLP = 100;
+// int meanVolumeLP = 100;
 int meanPriceLagLP = 6;
 double buyFrequencyLP = 0.25;
 double cancelBuyFrequencyLP = 0.25;
@@ -50,8 +50,11 @@ double meanActionTimeNT = meanDeltaTimeMarketOrder / (1.0-percentageLargeOrders)
 int meanVolumeNT = 100;
 double buyFrequencyNT = 0.5;
 
+//if we use a uniform distribution
+int maxVolumeNT = 500;
+
 double meanActionTimeLOT = meanDeltaTimeMarketOrder / percentageLargeOrders ;
-int meanVolumeLOT = 1000;
+int meanVolumeLOT = 100;
 double buyFrequencyLOT = 0.5;
 
 /*double meanActionTimeTF = 10 ;
@@ -68,6 +71,7 @@ double simulationTimeStop = 28800*10 ;
 double printIntervals = 80; //900 ;
 double impactMeasureLength = 60 ;
 
+<<<<<<< .mine
 //int main()
 //{
 //	
@@ -86,6 +90,50 @@ double impactMeasureLength = 60 ;
 //	//std::cin>>a;
 //
 //}
+
+
+
+
+
+
+
+
+
+
+
+
+=======
+
+boost::mutex a;
+
+void agentThread(Market *myMarket, Agent *actingAgent, double *currentTime, int sleepTime, std::string threadName)
+{
+	try{
+		while(*currentTime<simulationTimeStop)
+		{
+			// Get next time of action
+			a.lock();
+			*currentTime += actingAgent->getNextActionTime() ;
+			a.unlock();
+			// Select next player
+			//Agent * actingAgent = myMarket->getNextActor() ;
+			// Submit order
+			actingAgent->makeAction( actingAgent->getTargetedStock(), *currentTime) ;
+			// From time to time, check state of order book
+			// Update clock
+			myMarket->setNextActionTime() ;
+		//	std::cout << threadName << "   currentTime = " << *currentTime << std::endl ;	
+			Sleep(sleepTime);
+		}
+	}
+	catch(Exception &e)
+	{
+		std::cout <<e.what()<< std::endl ;
+	}
+}
+
+
+>>>>>>> .theirs
 int main(int argc, char* argv[])
 {
 	Plot * plotter = new Plot() ;
@@ -101,7 +149,10 @@ int main(int argc, char* argv[])
 
 	// Create one Liquidity Provider
 	DistributionExponential * LimitOrderActionTimeDistribution = new DistributionExponential(myRNG, meanActionTimeLP) ;
-	DistributionExponential *  LimitOrderOrderVolumeDistribution = new DistributionExponential(myRNG, meanVolumeLP) ;
+
+	//DistributionExponential *  LimitOrderOrderVolumeDistribution = new DistributionExponential(myRNG, meanVolumeLP) ;
+	DistributionGaussian *  LimitOrderOrderVolumeDistribution = new DistributionGaussian(myRNG, 0.7*maxVolumeNT,sqrt(0.2*maxVolumeNT)) ;
+	
 	//DistributionConstant * LimitOrderOrderVolumeDistribution = new DistributionConstant(myRNG, meanVolumeLP) ;
 	DistributionExponential * LimitOrderOrderPriceDistribution = new DistributionExponential(myRNG, meanPriceLagLP) ;
 	LiquidityProvider * myLiquidityProvider = new LiquidityProvider
@@ -137,7 +188,9 @@ int main(int argc, char* argv[])
 	// Create one Noise Trader
 	DistributionExponential * NoiseTraderActionTimeDistribution = new DistributionExponential(myRNG, meanActionTimeNT) ;
 	DistributionUniform * NoiseTraderOrderTypeDistribution = new DistributionUniform(myRNG) ;
-	DistributionExponential * NoiseTraderOrderVolumeDistribution = new DistributionExponential(myRNG, meanVolumeNT) ;
+	
+	DistributionUniform * NoiseTraderOrderVolumeDistribution = new DistributionUniform(myRNG, 0, maxVolumeNT) ;
+	//DistributionExponential * NoiseTraderOrderVolumeDistribution = new DistributionExponential(myRNG, meanVolumeNT) ;
 	//DistributionConstant * NoiseTraderOrderVolumeDistribution = new DistributionConstant(myRNG, meanVolumeNT) ;
 	NoiseTrader * myNoiseTrader = new NoiseTrader(myMarket, 
 		NoiseTraderActionTimeDistribution,
@@ -150,8 +203,31 @@ int main(int argc, char* argv[])
 	std::cout << "Simulation starts. " << std::endl ;
 	double currentTime = simulationTimeStart ;
 	int i=1;
+<<<<<<< .mine
 	
 	std::vector<double>  MidPriceTimeseries ;
+
+
+
+
+
+
+
+
+
+=======
+
+	//std::vector<double>  MidPriceTimeseries ;
+	//boost::thread threadNoise(agentThread, myMarket, myNoiseTrader, currentTime, 5000, "noise");
+	//boost::thread threadLiquidity(agentThread, myMarket, myLiquidityProvider, currentTime, 3000, "liquidity");
+
+	boost::thread_group agentGroup;
+
+	agentGroup.create_thread(boost::bind(&agentThread, myMarket, myNoiseTrader, currentTimePtr, 300, "noise   "));
+	agentGroup.create_thread(boost::bind(&agentThread, myMarket, myLiquidityProvider, currentTimePtr, 100, "liquidity"));
+//		agentThread(Market *myMarket, Agent *actingAgent, double currentTime)
+
+>>>>>>> .theirs
 	try{
 		while(currentTime<simulationTimeStop)
 		{
