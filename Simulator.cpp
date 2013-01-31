@@ -91,49 +91,6 @@ double impactMeasureLength = 60 ;
 //
 //}
 
-
-
-
-
-
-
-
-
-
-
-
-=======
-
-boost::mutex a;
-
-void agentThread(Market *myMarket, Agent *actingAgent, double *currentTime, int sleepTime, std::string threadName)
-{
-	try{
-		while(*currentTime<simulationTimeStop)
-		{
-			// Get next time of action
-			a.lock();
-			*currentTime += actingAgent->getNextActionTime() ;
-			a.unlock();
-			// Select next player
-			//Agent * actingAgent = myMarket->getNextActor() ;
-			// Submit order
-			actingAgent->makeAction( actingAgent->getTargetedStock(), *currentTime) ;
-			// From time to time, check state of order book
-			// Update clock
-			myMarket->setNextActionTime() ;
-		//	std::cout << threadName << "   currentTime = " << *currentTime << std::endl ;	
-			Sleep(sleepTime);
-		}
-	}
-	catch(Exception &e)
-	{
-		std::cout <<e.what()<< std::endl ;
-	}
-}
-
-
->>>>>>> .theirs
 int main(int argc, char* argv[])
 {
 	Plot * plotter = new Plot() ;
@@ -203,31 +160,20 @@ int main(int argc, char* argv[])
 	std::cout << "Simulation starts. " << std::endl ;
 	double currentTime = simulationTimeStart ;
 	int i=1;
-<<<<<<< .mine
 	
 	std::vector<double>  MidPriceTimeseries ;
 
-
-
-
-
-
-
-
-
-=======
 
 	//std::vector<double>  MidPriceTimeseries ;
 	//boost::thread threadNoise(agentThread, myMarket, myNoiseTrader, currentTime, 5000, "noise");
 	//boost::thread threadLiquidity(agentThread, myMarket, myLiquidityProvider, currentTime, 3000, "liquidity");
 
-	boost::thread_group agentGroup;
+	//boost::thread_group agentGroup;
 
-	agentGroup.create_thread(boost::bind(&agentThread, myMarket, myNoiseTrader, currentTimePtr, 300, "noise   "));
-	agentGroup.create_thread(boost::bind(&agentThread, myMarket, myLiquidityProvider, currentTimePtr, 100, "liquidity"));
+	//agentGroup.create_thread(boost::bind(&agentThread, myMarket, myNoiseTrader, currentTimePtr, 300, "noise   "));
+	//agentGroup.create_thread(boost::bind(&agentThread, myMarket, myLiquidityProvider, currentTimePtr, 100, "liquidity"));
 //		agentThread(Market *myMarket, Agent *actingAgent, double currentTime)
 
->>>>>>> .theirs
 	try{
 		while(currentTime<simulationTimeStop)
 		{
