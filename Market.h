@@ -3,7 +3,6 @@
 
 #include <map>
 #include <string>
-#include <boost/thread.hpp>
 #include "Types.h"
 
 class NewsServer;
@@ -164,14 +163,13 @@ class Market
 		std::map<int,double> m_NextActionTime;
 		double m_nextActionTime;
 		int m_nextActorId;
+
 		std::map<int,OrderBook*> m_assetOrderBooks;
 		int m_assetCounter;
 
 		int m_globalOrderCounter;
 		NewsServer * m_newsServer;
 		double m_news;
-
-		boost::mutex mutex_map;
 };
 
 #endif // __MARKET__H__

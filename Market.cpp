@@ -83,13 +83,6 @@ void Market::setNextActionTime()
 	if(m_newsServer!=NULL)
 		begin = 0;
 
-
-	//double nextTime=m_agents[begin]->getNextActionTime();
-	//for (int i=begin+1; i<=m_agentCounter;i++){
-	//	double time = m_agents[i]->getNextActionTime();
-	//	if (time<nextTime)
-	//		nextTime=time;
-	//}
 	for(int i=begin; i <= m_agentCounter; i++)// agent 0 is the news Server
 	{
 		if(i != m_nextActorId)
@@ -132,9 +125,7 @@ void Market::createAssets(int a_number, int a_tickSize, int a_defaultBid, int a_
 {
 	for (int i = 1;i<= a_number;i++)
 	{
-		mutex_map.lock();
 		m_assetOrderBooks[m_assetCounter+i] = new OrderBook(this,m_assetCounter+i, a_tickSize,a_defaultBid,a_defaultAsk);
-		mutex_map.unlock();
 		for(int j=1;j<=m_agentCounter;j++)
 		{
 			m_agents[j]->initAssetQuantity(i);	
@@ -163,9 +154,7 @@ OrderBook* Market::getOrderBook(int a_assetIdentifier)
 }
 void Market::pushOrder(Order &a_order)
 {
-	mutex_map.lock();
-	m_assetOrderBooks[a_order.getUnderlying()]->processOrder(a_order);
-	mutex_map.unlock();
+	m_assetOrderBooks[a_order.getUnderlying()]->processOrder(a_order);	
 }
 void Market::notifyExecution(int a_agentIdentifier,int a_orderIdentifier,double a_time,int a_price)
 {

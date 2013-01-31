@@ -2,10 +2,6 @@
 #include <iostream>
 #include <sstream>
 
-#include <windows.h>
-#include <boost/thread.hpp>
-#include <Synchapi.h>
-
 #include "Agent.h"
 #include "Market.h"
 #include "Order.h"
@@ -35,7 +31,7 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 }
 
 int nbAssets = 1;
-int storedDepth = 0;
+int storedDepth = 1;
 
 // Parameters for the liquidity provider
 double meanActionTimeLP = 0.35;
@@ -58,42 +54,38 @@ double meanActionTimeLOT = meanDeltaTimeMarketOrder / percentageLargeOrders ;
 int meanVolumeLOT = 1000;
 double buyFrequencyLOT = 0.5;
 
+/*double meanActionTimeTF = 10 ;
+int meanVolumeTF = 1 ;
+
+double meanActionTimeFVT = 60 ;
+int meanVolumeFVT = 1 ;
+int fundamentalValueFVT = 10000 ;
+*/
+
 int nInitialOrders = 1000 ;
 double simulationTimeStart = 0 ;
-double simulationTimeStop = 1000;
-double printIntervals = 30; //900 ;
+double simulationTimeStop = 28800*10 ;
+double printIntervals = 80; //900 ;
 double impactMeasureLength = 60 ;
 
-
-boost::mutex a;
-
-void agentThread(Market *myMarket, Agent *actingAgent, double *currentTime, int sleepTime, std::string threadName)
-{
-	try{
-		while(*currentTime<simulationTimeStop)
-		{
-			// Get next time of action
-			a.lock();
-			*currentTime += actingAgent->getNextActionTime() ;
-			a.unlock();
-			// Select next player
-			//Agent * actingAgent = myMarket->getNextActor() ;
-			// Submit order
-			actingAgent->makeAction( actingAgent->getTargetedStock(), *currentTime) ;
-			// From time to time, check state of order book
-			// Update clock
-			myMarket->setNextActionTime() ;
-			//std::cout << threadName << "   currentTime = " << *currentTime << std::endl ;	
-			Sleep(sleepTime);
-		}
-	}
-	catch(Exception &e)
-	{
-		std::cout <<e.what()<< std::endl ;
-	}
-}
-
-
+//int main()
+//{
+//	
+//	std::ofstream outFile("zzzzz.csv");
+//	RandomNumberGenerator *rng=new RandomNumberGenerator();
+//	DistributionUniform * unif=new DistributionUniform(rng);
+//	DistributionGaussian *normal = new DistributionGaussian(rng);
+//	DistributionExponential *expd = new DistributionExponential(rng,0.2);
+//	for(int i=0;i<1000;i++)
+//	{
+//		//std::cout<<expd->nextRandom()<<std::endl;
+//		outFile<<expd->nextRandom()<<'\n';
+//	}
+//	outFile.close();
+//	int a=2;
+//	//std::cin>>a;
+//
+//}
 int main(int argc, char* argv[])
 {
 	Plot * plotter = new Plot() ;
@@ -101,8 +93,8 @@ int main(int argc, char* argv[])
 	oss_marketName << "LargeTrader_" << percentageLargeOrders ;
 	Market *myMarket = new Market(oss_marketName.str());
 	myMarket->createAssets(nbAssets);
-
-	myMarket->getOrderBook(1)->setStoreOrderBookHistory(true,1);
+	
+	myMarket->getOrderBook(1)->setStoreOrderBookHistory(true,storedDepth);
 	myMarket->getOrderBook(1)->setStoreOrderHistory(true);
 	//myMarket->getOrderBook(1)->setPrintOrderBookHistory(true,storedDepth);
 	RandomNumberGenerator * myRNG = new RandomNumberGenerator();
@@ -113,17 +105,17 @@ int main(int argc, char* argv[])
 	//DistributionConstant * LimitOrderOrderVolumeDistribution = new DistributionConstant(myRNG, meanVolumeLP) ;
 	DistributionExponential * LimitOrderOrderPriceDistribution = new DistributionExponential(myRNG, meanPriceLagLP) ;
 	LiquidityProvider * myLiquidityProvider = new LiquidityProvider
-		(
-		myMarket, 
-		LimitOrderActionTimeDistribution,
-		LimitOrderOrderVolumeDistribution,
-		LimitOrderOrderPriceDistribution,
-		buyFrequencyLP,
-		1,
-		cancelBuyFrequencyLP,
-		cancelSellFrequencyLP,
-		uniformCancellationProbability
-		) ;
+	(
+			myMarket, 
+			LimitOrderActionTimeDistribution,
+			LimitOrderOrderVolumeDistribution,
+			LimitOrderOrderPriceDistribution,
+			buyFrequencyLP,
+			1,
+			cancelBuyFrequencyLP,
+			cancelSellFrequencyLP,
+			uniformCancellationProbability
+	) ;
 	myMarket->registerAgent(myLiquidityProvider);
 
 	// Submit nInitialOrders limit orders to initialize order book
@@ -132,13 +124,13 @@ int main(int argc, char* argv[])
 		myLiquidityProvider->makeAction(1, 0.0) ;	
 	}
 	std::cout 
-		<< "Time 0 : [bid ; ask] = " 
-		<< "[" << myMarket->getOrderBook(1)->getBidPrice()/100.0 << " ; "
-		<< myMarket->getOrderBook(1)->getAskPrice()/100.0 << "]"
-		<< "  [sizeBid ; sizeAsk] = " 
-		<< "[" << myMarket->getOrderBook(1)->getTotalBidQuantity() << " ; "
-		<< myMarket->getOrderBook(1)->getTotalAskQuantity() << "]"
-		<< std::endl ;
+			<< "Time 0 : [bid ; ask] = " 
+			<< "[" << myMarket->getOrderBook(1)->getBidPrice()/100.0 << " ; "
+			<< myMarket->getOrderBook(1)->getAskPrice()/100.0 << "]"
+			<< "  [sizeBid ; sizeAsk] = " 
+			<< "[" << myMarket->getOrderBook(1)->getTotalBidQuantity() << " ; "
+			<< myMarket->getOrderBook(1)->getTotalAskQuantity() << "]"
+			<< std::endl ;
 	std::cout << "Order book initialized." << std::endl ;
 	plotOrderBook(myMarket,plotter,1);
 
@@ -157,28 +149,23 @@ int main(int argc, char* argv[])
 	// Simulate market
 	std::cout << "Simulation starts. " << std::endl ;
 	double currentTime = simulationTimeStart ;
-	double *currentTimePtr = &currentTime;
-
 	int i=1;
-
-	//std::vector<double>  MidPriceTimeseries ;
-	//boost::thread threadNoise(agentThread, myMarket, myNoiseTrader, currentTime, 5000, "noise");
-	//boost::thread threadLiquidity(agentThread, myMarket, myLiquidityProvider, currentTime, 3000, "liquidity");
-
-	boost::thread_group agentGroup;
-
-	agentGroup.create_thread(boost::bind(&agentThread, myMarket, myNoiseTrader, currentTimePtr, 30, "noise   "));
-	agentGroup.create_thread(boost::bind(&agentThread, myMarket, myLiquidityProvider, currentTimePtr, 10, "liquidity"));
-//		agentThread(Market *myMarket, Agent *actingAgent, double currentTime)
-
+	
+	std::vector<double>  MidPriceTimeseries ;
 	try{
-		while(*currentTimePtr<simulationTimeStop)
+		while(currentTime<simulationTimeStop)
 		{
-			//std::cout << "currentTime main = " << *currentTimePtr << "  i * print interval = " << i*printIntervals << std::endl ;
-			if(*currentTimePtr>i*printIntervals)
+			// Get next time of action
+			currentTime += myMarket->getNextActionTime() ;
+			// Select next player
+			Agent * actingAgent = myMarket->getNextActor() ;
+			// Submit order
+			actingAgent->makeAction( actingAgent->getTargetedStock(), currentTime) ;
+			// From time to time, check state of order book
+			if(currentTime>i*printIntervals)
 			{
 				std::cout
-					<<"time: "<<*currentTimePtr << std::endl
+					<<"time: "<<currentTime << std::endl
 					<< "[bid;ask]=" 
 					<< "[" << myMarket->getOrderBook(1)->getBidPrice()/100.0 << " ; "
 					<< myMarket->getOrderBook(1)->getAskPrice()/100.0 << "]"<< std::endl
@@ -191,39 +178,30 @@ int main(int argc, char* argv[])
 					<< myNoiseTrader->getPendingOrders()->size() << "]"
 					<< std::endl;
 				// Plot order book
-				
+				plotOrderBook(myMarket,plotter,1);
 				// Agents'portfolios
 				std::cout << "LP: nStock=\t" << myLiquidityProvider->getStockQuantity(1) 
 					<< "\t Cash=\t" << myLiquidityProvider->getNetCashPosition() << std::endl ;				
 				std::cout << "NT: nStock=\t" << myNoiseTrader->getStockQuantity(1) 
 					<< "\t Cash=\t" << myNoiseTrader->getNetCashPosition() << std::endl<< std::endl<< std::endl ;
-				plotOrderBook(myMarket,plotter,1);
+
 				// Update sampling
 				i++;
-				//std::cout << "currentTime main = " << *currentTimePtr << std::endl ;	
 			}
-			//std::cout << "currentTime main = " << currentTime << std::endl ;	
+			// Update clock
+			myMarket->setNextActionTime() ;
 		}
 	}
 	catch(Exception &e)
 	{
 		std::cout <<e.what()<< std::endl ;
 	}
-
-
-
-	//join all threads
-	agentGroup.join_all();
-	//threadNoise.join();
-	//threadLiquidity.join();
-	std::cout << "join done" << std::endl ;
-	int lol;
-	std::cin>>lol;
-
 	
 	// Print stored history
 	myMarket->getOrderBook(1)->printStoredOrderBookHistory();
-
+	
+	
+	
 	// Stats on mid price
 	Stats * myStats = new Stats(myMarket->getOrderBook(1)) ;
 	for(int samplingPeriod = 15 ; samplingPeriod<=960; samplingPeriod*=2)
@@ -240,7 +218,7 @@ int main(int argc, char* argv[])
 		myStats->plotNormalizedPDF(dataLabel.str().c_str(),MidPriceLogReturns) ;
 		myStats->printAutocorrelation(dataLabel.str(), MidPriceLogReturns,(int) MidPriceLogReturns.size()/2, 1) ;
 	}
-
+	
 	// Stats on spread
 	std::vector<double> spreadTimeSeries = myStats->getPriceTimeSeries(SPREAD,0.5) ;
 	myStats->plotPDF("Spread",spreadTimeSeries) ;
@@ -258,7 +236,5 @@ int main(int argc, char* argv[])
 	delete myStats ;
 	delete myMarket ;
 	std::cout << "All done." << std::endl ;
-
-	std::cin>>lol;
 	return 0;
 }

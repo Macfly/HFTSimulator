@@ -69,6 +69,7 @@ int LiquidityProvider::getOrderPrice(int a_OrderBookId, OrderType a_OrderType) c
 OrderType LiquidityProvider::getOrderType() const
 {
 	double l_orderTypeAlea = m_OrderTypeDistribution->nextRandom();
+
 	if(l_orderTypeAlea<m_cancelBuyFrequency)
 	{
 //		std::cout << "CANCEL_BUY" << std::endl ;
