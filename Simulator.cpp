@@ -60,7 +60,7 @@ double buyFrequencyLOT = 0.5;
 
 int nInitialOrders = 1000 ;
 double simulationTimeStart = 0 ;
-double simulationTimeStop = 2880*30000 ;
+double simulationTimeStop = 1000;
 double printIntervals = 30; //900 ;
 double impactMeasureLength = 60 ;
 
@@ -102,8 +102,8 @@ int main(int argc, char* argv[])
 	Market *myMarket = new Market(oss_marketName.str());
 	myMarket->createAssets(nbAssets);
 
-	myMarket->getOrderBook(1)->setStoreOrderBookHistory(false,storedDepth);
-	myMarket->getOrderBook(1)->setStoreOrderHistory(false);
+	myMarket->getOrderBook(1)->setStoreOrderBookHistory(true,1);
+	myMarket->getOrderBook(1)->setStoreOrderHistory(true);
 	//myMarket->getOrderBook(1)->setPrintOrderBookHistory(true,storedDepth);
 	RandomNumberGenerator * myRNG = new RandomNumberGenerator();
 
@@ -167,7 +167,7 @@ int main(int argc, char* argv[])
 
 	boost::thread_group agentGroup;
 
-	agentGroup.create_thread(boost::bind(&agentThread, myMarket, myNoiseTrader, currentTimePtr, 300, "noise   "));
+	agentGroup.create_thread(boost::bind(&agentThread, myMarket, myNoiseTrader, currentTimePtr, 30, "noise   "));
 	agentGroup.create_thread(boost::bind(&agentThread, myMarket, myLiquidityProvider, currentTimePtr, 10, "liquidity"));
 //		agentThread(Market *myMarket, Agent *actingAgent, double currentTime)
 
@@ -191,13 +191,13 @@ int main(int argc, char* argv[])
 					<< myNoiseTrader->getPendingOrders()->size() << "]"
 					<< std::endl;
 				// Plot order book
-				plotOrderBook(myMarket,plotter,1);
+				
 				// Agents'portfolios
 				std::cout << "LP: nStock=\t" << myLiquidityProvider->getStockQuantity(1) 
 					<< "\t Cash=\t" << myLiquidityProvider->getNetCashPosition() << std::endl ;				
 				std::cout << "NT: nStock=\t" << myNoiseTrader->getStockQuantity(1) 
 					<< "\t Cash=\t" << myNoiseTrader->getNetCashPosition() << std::endl<< std::endl<< std::endl ;
-
+				plotOrderBook(myMarket,plotter,1);
 				// Update sampling
 				i++;
 				//std::cout << "currentTime main = " << *currentTimePtr << std::endl ;	
@@ -210,14 +210,19 @@ int main(int argc, char* argv[])
 		std::cout <<e.what()<< std::endl ;
 	}
 
-	// Print stored history
-	myMarket->getOrderBook(1)->printStoredOrderBookHistory();
 
 
 	//join all threads
 	agentGroup.join_all();
 	//threadNoise.join();
 	//threadLiquidity.join();
+	std::cout << "join done" << std::endl ;
+	int lol;
+	std::cin>>lol;
+
+	
+	// Print stored history
+	myMarket->getOrderBook(1)->printStoredOrderBookHistory();
 
 	// Stats on mid price
 	Stats * myStats = new Stats(myMarket->getOrderBook(1)) ;
@@ -253,7 +258,7 @@ int main(int argc, char* argv[])
 	delete myStats ;
 	delete myMarket ;
 	std::cout << "All done." << std::endl ;
-	int lol;
+
 	std::cin>>lol;
 	return 0;
 }

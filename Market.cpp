@@ -132,7 +132,9 @@ void Market::createAssets(int a_number, int a_tickSize, int a_defaultBid, int a_
 {
 	for (int i = 1;i<= a_number;i++)
 	{
+		mutex_map.lock();
 		m_assetOrderBooks[m_assetCounter+i] = new OrderBook(this,m_assetCounter+i, a_tickSize,a_defaultBid,a_defaultAsk);
+		mutex_map.unlock();
 		for(int j=1;j<=m_agentCounter;j++)
 		{
 			m_agents[j]->initAssetQuantity(i);	
