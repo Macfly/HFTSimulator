@@ -47,7 +47,6 @@ OrderType NoiseTrader::getOrderType() const
 
 int NoiseTrader::getOrderVolume() const
 {
-//	std::cout<<"market volume simulated"<<std::endl;
 	return (int)m_OrderVolumeDistribution->nextRandom();		
 }
 

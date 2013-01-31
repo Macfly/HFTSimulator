@@ -70,13 +70,6 @@ class LiquidityProvider : public Agent {
 		 */
 		virtual int getOrderVolume() const;
 
-		/*! \brief returns the order volume with respect to the input price
-		 *
-		 * The order volume is generated randomly according to a specified distribution depending on the price.
-		 */
-
-		virtual int getOrderVolume(double price, int a_OrderBookId , OrderType orderType) const ;
-
 		/*! \brief returns the order price
 		 *
 		 * The limit order price is generated randomly according to a specified distribution.
