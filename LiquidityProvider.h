@@ -53,6 +53,8 @@ class LiquidityProvider : public Agent {
 		 *
 		 */
 		virtual void makeAction(int a_OrderBookId, double currentTime);	
+
+		virtual void makeAction(int a_OrderBookId, double currentTime, bool init);	 
 		/*! \brief processes information after the agent is notified of a market event
 		 *
 		 * This method can be used to implement a feedback mechanism. After notification of a market event, this method is called to allow the agent to react to the market event.
@@ -69,6 +71,13 @@ class LiquidityProvider : public Agent {
 		 * The order volume is generated randomly according to a specified distribution.
 		 */
 		virtual int getOrderVolume() const;
+
+		/*! \brief returns the order volume with respect to the input price
+		 *
+		 * The order volume is generated randomly according to a specified distribution depending on the price.
+		 */
+
+		virtual int getOrderVolume(double price, int a_OrderBookId , OrderType orderType) const ;
 
 		/*! \brief returns the order price
 		 *

@@ -108,7 +108,7 @@ void Plot::plotOrderBook(	const std::vector<int> & x,
 	fprintf(m_gnuPlot, "set grid no ytics\n");
 	fprintf(m_gnuPlot, "set tic front\n");
 	fprintf(m_gnuPlot, "set xr [99.7:100.3]\n");
-	fprintf(m_gnuPlot, "set yr [-2000:2000]\n");	
+	fprintf(m_gnuPlot, "set yr [-500:500]\n");	
 	fprintf(m_gnuPlot, "set style fill solid 2.0 \n");
 	fprintf(m_gnuPlot, "set title \"Last Price = %f\"\n",  (double)last/100.0);
 	//fprintf(m_gnuPlot, "set color 1:($2 > 0 ? red:blue) \n");

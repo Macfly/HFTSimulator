@@ -147,6 +147,10 @@ class OrderBook
 		
 		Market * getLinkToMarket() ;
 
+		void cleanOrderBook();
+
+		void setDefaultBidAsk(int bid, int ask);
+
 		
 	private:
 		void printOrderBookHistoryOnTheFly(double a_time);

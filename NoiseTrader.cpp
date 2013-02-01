@@ -47,11 +47,14 @@ OrderType NoiseTrader::getOrderType() const
 
 int NoiseTrader::getOrderVolume() const
 {
+//	std::cout<<"market volume simulated"<<std::endl;
 	return (int)m_OrderVolumeDistribution->nextRandom();		
 }
 
 void NoiseTrader::makeAction(int a_OrderBookId, double a_currentTime)
 {
+
+	//std::cout<<"market order!!!"<<std::endl;
 	OrderType thisOrderType = getOrderType() ;
 	int thisOrderVolume = getOrderVolume() ;
 	submitOrder(

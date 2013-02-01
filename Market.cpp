@@ -114,6 +114,7 @@ void Market::setNextActionTime()
 
 Agent* Market::getNextActor()
 {
+	//
 	return m_agents[m_nextActorId];
 }
 

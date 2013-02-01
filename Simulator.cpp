@@ -37,9 +37,9 @@ int storedDepth = 1;
 double meanActionTimeLP = 0.35;
 int meanVolumeLP = 100;
 int meanPriceLagLP = 6;
-double buyFrequencyLP = 0.25;
-double cancelBuyFrequencyLP = 0.25;
-double cancelSellFrequencyLP = 0.25;
+double buyFrequencyLP = 0.5;
+double cancelBuyFrequencyLP = 0;
+double cancelSellFrequencyLP = 0;
 double uniformCancellationProbability = 0.01;
 
 // Parameters for the liquidity takers : NT and LOT
@@ -49,6 +49,10 @@ double percentageLargeOrders = 0.01 ;
 double meanActionTimeNT = meanDeltaTimeMarketOrder / (1.0-percentageLargeOrders) ;
 int meanVolumeNT = 100;
 double buyFrequencyNT = 0.5;
+
+//if you use a uniform distribution
+int minVolumeNT=0;
+int maxVolumeNT=100;
 
 double meanActionTimeLOT = meanDeltaTimeMarketOrder / percentageLargeOrders ;
 int meanVolumeLOT = 1000;
@@ -62,10 +66,10 @@ int meanVolumeFVT = 1 ;
 int fundamentalValueFVT = 10000 ;
 */
 
-int nInitialOrders = 1000 ;
+int nInitialOrders = 1 ;
 double simulationTimeStart = 0 ;
 double simulationTimeStop = 28800*10 ;
-double printIntervals = 80; //900 ;
+double printIntervals = 30; //900 ;
 double impactMeasureLength = 60 ;
 
 //int main()
@@ -101,7 +105,8 @@ int main(int argc, char* argv[])
 
 	// Create one Liquidity Provider
 	DistributionExponential * LimitOrderActionTimeDistribution = new DistributionExponential(myRNG, meanActionTimeLP) ;
-	DistributionExponential *  LimitOrderOrderVolumeDistribution = new DistributionExponential(myRNG, meanVolumeLP) ;
+	//DistributionExponential *  LimitOrderOrderVolumeDistribution = new DistributionExponential(myRNG, meanVolumeLP) ;
+	DistributionGaussian * LimitOrderOrderVolumeDistribution = new DistributionGaussian(myRNG, 0.7*100, sqrt(0.2*100 ));
 	//DistributionConstant * LimitOrderOrderVolumeDistribution = new DistributionConstant(myRNG, meanVolumeLP) ;
 	DistributionExponential * LimitOrderOrderPriceDistribution = new DistributionExponential(myRNG, meanPriceLagLP) ;
 	LiquidityProvider * myLiquidityProvider = new LiquidityProvider
@@ -122,6 +127,7 @@ int main(int argc, char* argv[])
 	for(int n=0; n<nInitialOrders; n++)
 	{
 		myLiquidityProvider->makeAction(1, 0.0) ;	
+		std::cout<<"initial order nb "<< n+1 << " out of "<< nInitialOrders<<std::endl;
 	}
 	std::cout 
 			<< "Time 0 : [bid ; ask] = " 
@@ -137,7 +143,8 @@ int main(int argc, char* argv[])
 	// Create one Noise Trader
 	DistributionExponential * NoiseTraderActionTimeDistribution = new DistributionExponential(myRNG, meanActionTimeNT) ;
 	DistributionUniform * NoiseTraderOrderTypeDistribution = new DistributionUniform(myRNG) ;
-	DistributionExponential * NoiseTraderOrderVolumeDistribution = new DistributionExponential(myRNG, meanVolumeNT) ;
+	//DistributionExponential * NoiseTraderOrderVolumeDistribution = new DistributionExponential(myRNG, meanVolumeNT) ;
+	DistributionUniform * NoiseTraderOrderVolumeDistribution = new DistributionUniform(myRNG, minVolumeNT, maxVolumeNT) ;
 	//DistributionConstant * NoiseTraderOrderVolumeDistribution = new DistributionConstant(myRNG, meanVolumeNT) ;
 	NoiseTrader * myNoiseTrader = new NoiseTrader(myMarket, 
 		NoiseTraderActionTimeDistribution,
@@ -155,10 +162,23 @@ int main(int argc, char* argv[])
 	try{
 		while(currentTime<simulationTimeStop)
 		{
+		//	std::cout<<"go while"<<std::endl;
 			// Get next time of action
 			currentTime += myMarket->getNextActionTime() ;
 			// Select next player
 			Agent * actingAgent = myMarket->getNextActor() ;
+
+		if (myMarket->getNextActor()->getAgentType()==LIQUIDITY_PROVIDER){
+			int oldAskPrice= myMarket->getOrderBook(1)-> getAskPrice();
+			int oldBidPrice= myMarket->getOrderBook(1)->getBidPrice();
+			std::cout<<"old bid : "<<oldBidPrice<<" , old ask : "<<oldAskPrice<<std::endl;
+				myMarket->getOrderBook(1)->cleanOrderBook();
+			//	myMarket->getOrderBook(1)->setDefaultBidAsk(oldBidPrice, oldAskPrice);
+			myLiquidityProvider->makeAction( actingAgent->getTargetedStock(), currentTime, true) ;
+
+		}
+				//myMarket->getOrderBook(1)->cleanOrderBook();
+			
 			// Submit order
 			actingAgent->makeAction( actingAgent->getTargetedStock(), currentTime) ;
 			// From time to time, check state of order book

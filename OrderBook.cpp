@@ -702,3 +702,19 @@ int OrderBook::getTotalVolumeAtPrice(int a_price) const
 	}
 	return l_number;
 }
+
+void OrderBook::cleanOrderBook(){
+	std::map<int,std::list<Order> >::iterator itPrice ;
+    // Look for order in m_asks
+
+
+	m_asks.clear();
+	m_bids.clear();
+
+
+}
+
+void OrderBook::setDefaultBidAsk(int bid, int ask){
+	m_defaultBid = bid;
+	m_defaultAsk = ask;
+}
