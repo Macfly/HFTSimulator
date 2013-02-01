@@ -104,16 +104,22 @@ void Plot::plotOrderBook(	const std::vector<int> & x,
 	//! on lance la commande plot
 	fflush (m_gnuPlot);
 	fprintf(m_gnuPlot, "set boxwidth 0.7 relative\n");
-	fprintf(m_gnuPlot, "set grid\n");
-	
+	fprintf(m_gnuPlot, "set grid ytics noxtics\n");
+	fprintf(m_gnuPlot, "set grid no ytics\n");
+	fprintf(m_gnuPlot, "set tic front\n");
+	fprintf(m_gnuPlot, "set xr [99.7:100.3]\n");
+	fprintf(m_gnuPlot, "set yr [-4000:4000]\n");	
 	fprintf(m_gnuPlot, "set style fill solid 2.0 \n");
 	fprintf(m_gnuPlot, "set title \"Last Price = %f\"\n",  (double)last/100.0);
-	fprintf(m_gnuPlot, "set color 1:($2 > 0 ? magenta:blue) \n");
+	//fprintf(m_gnuPlot, "set color 1:($2 > 0 ? red:blue) \n");
 	fprintf(m_gnuPlot, "plot \"OrderBook.data\" using 1:($2 != 0 ? $2 : 1/0) , using 1:($2 < 0 ? $2 : $2 ) lc rgb \"blue\" , using 1:($2 < 0 ? $2 : $2 ) lc rgb \"red\" with boxes  \n");
 	fprintf(m_gnuPlot, "set zeroaxis\n");
-	fprintf(m_gnuPlot, "set key font 0.01 \n");
-	fprintf(m_gnuPlot, "set xtics axis 0.02\n");
-	fprintf(m_gnuPlot,"plot \"OrderBook.data\" using 1:($2 != 0 ? $2 : 1/0) ,\'\' using 1:($2 < 0? $2 : 1/0 ) lc rgb \"blue\" with boxes,\'\' using 1:($2 > 0 ? $2 : 1/0 ) lc rgb \"magenta\"  with boxes \n");
+	//fprintf(m_gnuPlot, "set xtic rotate by 45 font \",7\"");
+	fprintf(m_gnuPlot, "set xtics offset 0,-0.8,0 axis 0.01 rotate by 75\n");
+	fprintf(m_gnuPlot, "set xtics front");
+	fprintf(m_gnuPlot, "show xtics\n");
+	
+	fprintf(m_gnuPlot,"plot \"OrderBook.data\" using 1:($2 != 0 ? $2 : 1/0) ,\'\' using 1:($2 < 0? $2 : 1/0 ) lc rgb \"blue\" with boxes,\'\' using 1:($2 > 0 ? $2 : 1/0 ) lc rgb \"red\"  with boxes \n");
 	fflush (m_gnuPlot);
 
 }
