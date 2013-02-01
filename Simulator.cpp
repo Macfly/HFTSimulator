@@ -51,8 +51,8 @@ int meanVolumeNT = 100;
 double buyFrequencyNT = 0.5;
 
 //if you use a uniform distribution
-int minVolumeNT=0;
-int maxVolumeNT=100;
+int minVolumeNT=50;
+int maxVolumeNT=180;
 
 double meanActionTimeLOT = meanDeltaTimeMarketOrder / percentageLargeOrders ;
 int meanVolumeLOT = 1000;
@@ -171,11 +171,14 @@ int main(int argc, char* argv[])
 		if (myMarket->getNextActor()->getAgentType()==LIQUIDITY_PROVIDER){
 			int oldAskPrice= myMarket->getOrderBook(1)-> getAskPrice();
 			int oldBidPrice= myMarket->getOrderBook(1)->getBidPrice();
-			std::cout<<"old bid : "<<oldBidPrice<<" , old ask : "<<oldAskPrice<<std::endl;
-				myMarket->getOrderBook(1)->cleanOrderBook();
-			//	myMarket->getOrderBook(1)->setDefaultBidAsk(oldBidPrice, oldAskPrice);
+		//	std::cout<<"old bid : "<<oldBidPrice<<" , old ask : "<<oldAskPrice<<std::endl;
+			myMarket->getOrderBook(1)->cleanOrderBook();
+		//	std::cout<<"clean bid : "<< myMarket->getOrderBook(1)->getBidPrice() <<" , clean ask : "<< myMarket->getOrderBook(1)-> getAskPrice() <<std::endl;
+		//	int a;
+			myMarket->getOrderBook(1)->setDefaultBidAsk(oldBidPrice, oldAskPrice);
+		//	std::cout<<"New bid : "<< myMarket->getOrderBook(1)->getBidPrice() <<" , New ask : "<< myMarket->getOrderBook(1)-> getAskPrice() <<std::endl;
+		//	std::cin >> a;
 			myLiquidityProvider->makeAction( actingAgent->getTargetedStock(), currentTime, true) ;
-
 		}
 				//myMarket->getOrderBook(1)->cleanOrderBook();
 			

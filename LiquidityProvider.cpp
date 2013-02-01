@@ -168,14 +168,17 @@ void LiquidityProvider::makeAction(int a_OrderBookId, double a_currentTime, bool
 	//		thisOrderType,
 	//		thisOrderPrice
 	//	);
+	//	std::cout<<"LIMIT order!!!"<<std::endl;
+
 	int tickSize = m_linkToMarket->getOrderBook(a_OrderBookId)->getTickSize();
 	int i;
 	int end;
 	if (init){i=1;end=20;}
 	else {i=0;end=19;}
-
+		RandomNumberGenerator *rng = new RandomNumberGenerator();
+		DistributionUniform *u = new DistributionUniform(rng, 0, 1);
 	for (i;i<=end;i++){
-		int currentPriceBid = m_linkToMarket->getOrderBook(a_OrderBookId)->getBidPrice() ;
+		if( u->nextRandom() > 0.5) {
 		int currentPriceAsk = m_linkToMarket->getOrderBook(a_OrderBookId)->getAskPrice() ;
 		//std::cout<<"current Ask : "<<currentPriceAsk<<std::endl;
 		//std::cout<<"current Bid : "<<currentPriceBid<<std::endl;
@@ -188,8 +191,6 @@ void LiquidityProvider::makeAction(int a_OrderBookId, double a_currentTime, bool
 			LIMIT_BUY,
 			buyPrice
 		);
-	}
-	for (int i=1;i<=20;i++){
 		int currentPriceBid = m_linkToMarket->getOrderBook(a_OrderBookId)->getBidPrice() ;
 		int sellPrice = currentPriceBid+(i)*tickSize;
 		int sellOrderVolume = getOrderVolume(sellPrice, a_OrderBookId, LIMIT_SELL) ;
@@ -199,6 +200,29 @@ void LiquidityProvider::makeAction(int a_OrderBookId, double a_currentTime, bool
 			LIMIT_SELL,
 			sellPrice
 		);
+		}else{
+			int currentPriceBid = m_linkToMarket->getOrderBook(a_OrderBookId)->getBidPrice() ;
+		int sellPrice = currentPriceBid+(i)*tickSize;
+		int sellOrderVolume = getOrderVolume(sellPrice, a_OrderBookId, LIMIT_SELL) ;
+		submitOrder(
+			a_OrderBookId, a_currentTime,
+			sellOrderVolume,
+			LIMIT_SELL,
+			sellPrice
+		);
+		int currentPriceAsk = m_linkToMarket->getOrderBook(a_OrderBookId)->getAskPrice() ;
+		//std::cout<<"current Ask : "<<currentPriceAsk<<std::endl;
+		//std::cout<<"current Bid : "<<currentPriceBid<<std::endl;
+
+		int buyPrice = currentPriceAsk-(i)*tickSize;
+		int buyOrderVolume = getOrderVolume(buyPrice, a_OrderBookId, LIMIT_BUY) ;
+		submitOrder(
+			a_OrderBookId, a_currentTime,
+			buyOrderVolume,
+			LIMIT_BUY,
+			buyPrice
+		);
+		}
 	}
 
 }
