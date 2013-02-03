@@ -155,7 +155,7 @@ OrderBook* Market::getOrderBook(int a_assetIdentifier)
 }
 void Market::pushOrder(Order &a_order)
 {
-	m_assetOrderBooks[a_order.getUnderlying()]->processOrder(a_order);	
+	m_assetOrderBooks[a_order.getUnderlying()]->pushOrder(a_order);	
 }
 void Market::notifyExecution(int a_agentIdentifier,int a_orderIdentifier,double a_time,int a_price)
 {

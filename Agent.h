@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include "Types.h"
+#include <concurrent_unordered_map.h>
 
 class Order;
 class Market;
@@ -157,7 +158,7 @@ class Agent
 		/*! \brief returns reference to map of pending orders
 		 * 
 		 */
-		std::map<int,Order> * getPendingOrders() ;
+		concurrency::concurrent_unordered_map<int,Order> * getPendingOrders() ;
 	
 	protected:
 		int	m_identifier;
@@ -169,7 +170,7 @@ class Agent
 		/*! \brief map of pending orders (i.e. orders which can be cancelled)
 		 * 
 		 */
-		std::map<int,Order> m_pendingOrders;
+		concurrency::concurrent_unordered_map<int,Order> m_pendingOrders;
 		
 		int m_cashPosition;
 		

@@ -4,7 +4,13 @@
 #include <map>
 #include <list>
 #include <cstdio>
-class Order;
+
+#include <concurrent_queue.h>
+#include <concurrent_unordered_map.h>
+
+#include "Order.h"
+
+//class Order;
 class Market;
 /*! \brief Generic order book class
  *
@@ -60,16 +66,18 @@ class OrderBook
 		 *
 		 *  If the price does not exist, it returns 0.
 		 */
-		int getQuantityForThisPrice(std::map< int , std::list < Order > > a_orderQueue,int a_priceLevel) const;
+		int getAskQuantityForThisPrice(int a_priceLevel) const;
+
+		int getBidQuantityForThisPrice(int a_priceLevel) const;
 		
-		/*! \brief returns the available quantity up to a given Bid price
-		 */
-		int getBidQuantityUpToPrice(int a_price) const;
-		
-		/*! \brief returns the available quantity up to a given ask price
-		 */
-		int getAskQuantityUpToPrice(int a_price) const;
-		
+		///*! \brief returns the available quantity up to a given Bid price
+		// */
+		//int getBidQuantityUpToPrice(int a_price) const;
+		//
+		///*! \brief returns the available quantity up to a given ask price
+		// */
+		//int getAskQuantityUpToPrice(int a_price) const;
+		//
 		/*! cancel a specific given order
 		 * 
 		 */
@@ -81,7 +89,7 @@ class OrderBook
 		 *
 		 *  The function also notifies the owner of the order of the result of this processing, and updates the last price for the concerned asset, and the cash position for concerned agents.
 		 */
-		void processOrder(Order & a_order);
+		void runOrderBook();
 		
 		/*! \brief prints an already stored history of the order book, if the bolean m_storeOrderBookHistory was set to true
 		 *
@@ -133,12 +141,12 @@ class OrderBook
 		/*! \brief returns the number of orders of the concerned agent at the specified price
 		 *
 		 */
-		int getNumberOfOrders(int a_agentIdentifier, int a_price) const;
-		int getTotalVolumeAtPrice(int a_price) const;
+		//int getNumberOfOrders(int a_agentIdentifier, int a_price) const;
+		//int getTotalVolumeAtPrice(int a_price) const;
 		int getTotalAskQuantity() ;
 		int getTotalBidQuantity() ;
-		int getBidPriceAtLevel(int levelMax) ;
-		int getAskPriceAtLevel(int levelMax) ;
+		//int getBidPriceAtLevel(int levelMax) ;
+		//int getAskPriceAtLevel(int levelMax) ;
 		
 		const std::vector<OrderBookHistory>  & getOrderBookHistory() const;
 		const std::vector<Order>  & getOrderHistory() const;
@@ -151,6 +159,10 @@ class OrderBook
 
 		void setDefaultBidAsk(int bid, int ask);
 
+		void pushOrder(Order &order);
+
+		void OrderBook::closeOrderBook();
+
 		
 	private:
 		void printOrderBookHistoryOnTheFly(double a_time);
@@ -162,6 +174,9 @@ class OrderBook
 		void processMarketBuyOrder(Order  &a_order);
 		void processMarketSellOrder(Order  &a_order);
 		void printHeader(std::ofstream & a_outFile) const;
+
+
+
 		
 		
 		
@@ -191,6 +206,20 @@ class OrderBook
 		int m_maxDepth;
 		bool m_headerPrinted;
 		
+		concurrency::concurrent_queue<Order> orders;
+		bool open;
+		concurrency::concurrent_unordered_map<int, int> bids_quantity;
+		concurrency::concurrent_unordered_map<int, int> asks_quantity;
 
 };
+template <typename K, typename V>
+V get_value_map(const  concurrency::concurrent_unordered_map <K,V> & m, const K & key, const V & defval ) {
+   typename concurrency::concurrent_unordered_map<K,V>::const_iterator it = m.find( key );
+   if ( it == m.end() ) {
+      return defval;
+   }
+   else {
+      return it->second;
+   }
+}
 #endif // __ORDERBOOK__H__
