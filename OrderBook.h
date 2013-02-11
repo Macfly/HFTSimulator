@@ -130,6 +130,8 @@ class OrderBook
 		 */
 		std::map< int , std::list < Order > > getAskQueue() const;
 
+		std::vector<int> getHistoricPrices();
+
 		/*! \brief returns the number of orders of the concerned agent at the specified price
 		 *
 		 */
@@ -190,7 +192,8 @@ class OrderBook
 		bool m_printHistoryonTheFly;
 		int m_maxDepth;
 		bool m_headerPrinted;
-		
+		//contains the prices of the asset
+		std::vector<int> m_historicPrices;
 
 };
 #endif // __ORDERBOOK__H__

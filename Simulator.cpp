@@ -27,7 +27,36 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 	int last;
 	aMarket->getOrderBook(a_orderBookId)->getOrderBookForPlot(price,priceQ);
 	last = aMarket->getOrderBook(a_orderBookId)->getPrice();
-	aplotter->plotOrderBook(price,priceQ,last);
+	std::vector<int> historicPrices = aMarket->getOrderBook(a_orderBookId)->getHistoricPrices();
+	int sizePrices = historicPrices.size();
+	//std::cout<<sizePrices<<std::endl;
+	/*for (int k=0;k<sizePrices;k++){
+					int a;
+					std::cout<< aMarket->getOrderBook(1)->getHistoricPrices()[k]<<std::endl;
+					std::cin>>a;
+				}*/
+	double variance=0;
+	if (sizePrices>1){
+
+		for (int z=0;z<(sizePrices-1);z++){
+			//std::cout<<historicPrices[z+1]<<std::endl;
+			//std::cout<<historicPrices[z]<<std::endl;
+			//int a;
+			//std::cin>>a;
+			variance += pow( log( historicPrices[z+1]/historicPrices[z]) ,2);
+		}
+	}
+
+			
+	//std::cout<<"variance = "<<variance<<std::endl;
+
+	if (aMarket->getCurrentTime()  != 0){
+
+		variance /= aMarket->getCurrentTime();
+	}
+	double volatility = pow(variance, 0.5);
+	//std::cout<<"vol = "<<volatility<<std::endl;
+	aplotter->plotOrderBook(price,priceQ,last, volatility);
 }
 
 int nbAssets = 1;
@@ -173,18 +202,21 @@ int main(int argc, char* argv[])
 			int oldBidPrice= myMarket->getOrderBook(1)->getBidPrice();
 		//	std::cout<<"old bid : "<<oldBidPrice<<" , old ask : "<<oldAskPrice<<std::endl;
 			myMarket->getOrderBook(1)->cleanOrderBook();
+			myLiquidityProvider->cleanPending();
 		//	std::cout<<"clean bid : "<< myMarket->getOrderBook(1)->getBidPrice() <<" , clean ask : "<< myMarket->getOrderBook(1)-> getAskPrice() <<std::endl;
 		//	int a;
 			myMarket->getOrderBook(1)->setDefaultBidAsk(oldBidPrice, oldAskPrice);
 		//	std::cout<<"New bid : "<< myMarket->getOrderBook(1)->getBidPrice() <<" , New ask : "<< myMarket->getOrderBook(1)-> getAskPrice() <<std::endl;
 		//	std::cin >> a;
 			myLiquidityProvider->makeAction( actingAgent->getTargetedStock(), currentTime, true) ;
+			
 		}
 				//myMarket->getOrderBook(1)->cleanOrderBook();
-			
+		else{	
 			// Submit order
 			actingAgent->makeAction( actingAgent->getTargetedStock(), currentTime) ;
-			// From time to time, check state of order book
+		}
+		// From time to time, check state of order book
 			if(currentTime>i*printIntervals)
 			{
 				std::cout
@@ -208,7 +240,15 @@ int main(int argc, char* argv[])
 				std::cout << "NT: nStock=\t" << myNoiseTrader->getStockQuantity(1) 
 					<< "\t Cash=\t" << myNoiseTrader->getNetCashPosition() << std::endl<< std::endl<< std::endl ;
 
+				int size=myMarket->getOrderBook(1)->getHistoricPrices().size();
+				//for (int k=0;k<size;k++){
+				//	int a;
+				//	std::cout<< myMarket->getOrderBook(1)->getHistoricPrices()[k]<<std::endl;
+				//	std::cin>>a;
+				//}
+				
 				// Update sampling
+				
 				i++;
 			}
 			// Update clock

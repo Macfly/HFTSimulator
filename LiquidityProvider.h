@@ -60,6 +60,10 @@ class LiquidityProvider : public Agent {
 		 * This method can be used to implement a feedback mechanism. After notification of a market event, this method is called to allow the agent to react to the market event.
 		 */
 		virtual void processInformation();
+
+		void cleanPending();
+
+
 	protected:
 		/*! \brief returns the order type
 		 *
@@ -89,6 +93,8 @@ class LiquidityProvider : public Agent {
 		 *
 		 */
 		void chooseOrdersToBeCanceled(int a_OrderBookId, bool a_buySide, double a_time);
+
+		
 		
 	private:
 		

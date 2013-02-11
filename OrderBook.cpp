@@ -22,6 +22,8 @@ OrderBook::OrderBook(Market *a_market, int a_identifier, int a_tickSize, int a_d
 	m_printHistoryonTheFly = false;
 	m_maxDepth = 4;
 	m_headerPrinted = false;
+
+	m_historicPrices.push_back(10000); 
 }
 OrderBook::~OrderBook()
 {
@@ -225,6 +227,7 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 			if(iter->second.empty() && iter != m_asks.end()){
 				m_asks.erase(m_asks.begin()) ;
 			}
+			m_historicPrices.push_back(m_last);
 		}
 		else
 		{
@@ -298,6 +301,8 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 			if(iter->second.empty() && iter != m_bids.rend()){
 				m_bids.erase( --m_bids.end() ) ;
 			}
+
+			m_historicPrices.push_back(m_last);
 		}
 		else
 		{
@@ -717,4 +722,8 @@ void OrderBook::cleanOrderBook(){
 void OrderBook::setDefaultBidAsk(int bid, int ask){
 	m_defaultBid = bid;
 	m_defaultAsk = ask;
+}
+
+std::vector<int> OrderBook::getHistoricPrices(){
+	return m_historicPrices;
 }

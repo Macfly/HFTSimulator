@@ -56,7 +56,7 @@ void Plot::plot(std::string dataName, int size, const double *x, const double *y
 }
 //-----------------------------------------------------------------------------
 void Plot::plotOrderBook(	const std::vector<int> & x, 
-				   const std::vector<int> & y,int last)
+				   const std::vector<int> & y,int last, double volatility)
 {
 	std::ofstream outFile("OrderBook.data");
 	int index(0);
@@ -108,9 +108,9 @@ void Plot::plotOrderBook(	const std::vector<int> & x,
 	fprintf(m_gnuPlot, "set grid no ytics\n");
 	fprintf(m_gnuPlot, "set tic front\n");
 	fprintf(m_gnuPlot, "set xr [99.7:100.3]\n");
-	fprintf(m_gnuPlot, "set yr [-500:500]\n");	
+	fprintf(m_gnuPlot, "set yr [-250:250]\n");	
 	fprintf(m_gnuPlot, "set style fill solid 2.0 \n");
-	fprintf(m_gnuPlot, "set title \"Last Price = %f\"\n",  (double)last/100.0);
+	fprintf(m_gnuPlot, "set title \"Last Price = %f, Volatility = %d\"\n",  (double)last/100.0, volatility);
 	fprintf(m_gnuPlot, "set zeroaxis\n");
 	//fprintf(m_gnuPlot, "set xtic rotate by 45 font \",7\"");
 	fprintf(m_gnuPlot, "set xtics offset 0,-0.8,0 axis 0.01 rotate by 75\n");
