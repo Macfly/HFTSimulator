@@ -27,8 +27,13 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 	int last;
 	aMarket->getOrderBook(a_orderBookId)->getOrderBookForPlot(price,priceQ);
 	last = aMarket->getOrderBook(a_orderBookId)->getPrice();
+
 	std::vector<int> historicPrices = aMarket->getOrderBook(a_orderBookId)->getHistoricPrices();
+	std::vector<double> transactionsTimes = aMarket->getOrderBook(a_orderBookId)->getTransactionsTimes();
+
 	int sizePrices = historicPrices.size();
+	int sizeTransactionsTimes = transactionsTimes.size();
+
 	//std::cout<<sizePrices<<std::endl;
 	/*for (int k=0;k<sizePrices;k++){
 					int a;
@@ -50,12 +55,10 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 			
 	//std::cout<<"variance = "<<variance<<std::endl;
 
-	if (aMarket->getCurrentTime()  != 0){
-
-		variance /= aMarket->getCurrentTime();
-	}
+	variance = variance/transactionsTimes[sizeTransactionsTimes-1];
+	
 	double volatility = pow(variance, 0.5);
-	//std::cout<<"vol = "<<volatility<<std::endl;
+	std::cout<<"vol = "<<volatility<<std::endl;
 	aplotter->plotOrderBook(price,priceQ,last, volatility);
 }
 

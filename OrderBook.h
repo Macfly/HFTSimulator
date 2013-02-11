@@ -132,6 +132,8 @@ class OrderBook
 
 		std::vector<int> getHistoricPrices();
 
+		std::vector<double> getTransactionsTimes();
+
 		/*! \brief returns the number of orders of the concerned agent at the specified price
 		 *
 		 */
@@ -192,8 +194,11 @@ class OrderBook
 		bool m_printHistoryonTheFly;
 		int m_maxDepth;
 		bool m_headerPrinted;
+
 		//contains the prices of the asset
 		std::vector<int> m_historicPrices;
+		//contains the times of transactions (Market orders)
+		std::vector<double> m_transactionsTimes;
 
 };
 #endif // __ORDERBOOK__H__

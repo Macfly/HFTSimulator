@@ -24,6 +24,7 @@ OrderBook::OrderBook(Market *a_market, int a_identifier, int a_tickSize, int a_d
 	m_headerPrinted = false;
 
 	m_historicPrices.push_back(10000); 
+	m_transactionsTimes.push_back(0);
 }
 OrderBook::~OrderBook()
 {
@@ -228,6 +229,7 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 				m_asks.erase(m_asks.begin()) ;
 			}
 			m_historicPrices.push_back(m_last);
+			m_transactionsTimes.push_back(m_linkToMarket->getCurrentTime());
 		}
 		else
 		{
@@ -303,6 +305,9 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 			}
 
 			m_historicPrices.push_back(m_last);
+
+			m_transactionsTimes.push_back(m_linkToMarket->getCurrentTime());
+
 		}
 		else
 		{
@@ -726,4 +731,8 @@ void OrderBook::setDefaultBidAsk(int bid, int ask){
 
 std::vector<int> OrderBook::getHistoricPrices(){
 	return m_historicPrices;
+}
+
+std::vector<double> OrderBook::getTransactionsTimes(){
+	return m_transactionsTimes;
 }
