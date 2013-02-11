@@ -55,14 +55,26 @@ void Plot::plot(std::string dataName, int size, const double *x, const double *y
 
 }
 //-----------------------------------------------------------------------------
+void Plot::plotPrices( const std::vector<double> & x, const std::vector<int> & y){
+	std::ofstream outFile("Prices.data");
+	for(unsigned int i=0;i<x.size();i++){
+			outFile<<x[i]<<'\t'<<y[i]/100.0<<'\n';	
+	}	
+	outFile.close();
+	//! on lance la commande plot
+	fflush (m_gnuPlot);
+	//fprintf(m_gnuPlot, "set style fill solid 2.0 \n");
+	fprintf(m_gnuPlot, "set title \"History of Prices \"\n");
+	fprintf(m_gnuPlot,"plot \"Prices.data\" using 1:2 with lines \n");
+	fflush (m_gnuPlot);
+}
+//-----------------------------------------------------------------------------
 void Plot::plotOrderBook(	const std::vector<int> & x, 
 				   const std::vector<int> & y,int last, double volatility)
 {
 	std::ofstream outFile("OrderBook.data");
 	int index(0);
-		
 	//outFile<<pold/100.0<<'\t'<<y[std::max(index-20,0)]<<'\n';
-	
 	std::vector<int> x2;
 	std::vector<int> y2;
 	x2.push_back(x[0]);
@@ -86,7 +98,6 @@ void Plot::plotOrderBook(	const std::vector<int> & x,
 	while(y2[index] - y2[index+1] >= y2[index]){
 			index++;
 	}
-	
 	pold=x2[std::max(index-20,0)];
 	for(unsigned int i=std::max(index-20+1,1);i<std::min(index+21,(int)x2.size());i++){
 		if(x2[i] != pold+1) {
@@ -100,7 +111,7 @@ void Plot::plotOrderBook(	const std::vector<int> & x,
 	}
 
 	outFile.close();
-	
+
 	//! on lance la commande plot
 	fflush (m_gnuPlot);
 	fprintf(m_gnuPlot, "set boxwidth 0.7 relative\n");

@@ -100,7 +100,7 @@ int fundamentalValueFVT = 10000 ;
 
 int nInitialOrders = 1 ;
 double simulationTimeStart = 0 ;
-double simulationTimeStop = 28800*10 ;
+double simulationTimeStop = 288*10 ;
 double printIntervals = 30; //900 ;
 double impactMeasureLength = 60 ;
 
@@ -219,6 +219,9 @@ int main(int argc, char* argv[])
 			// Submit order
 			actingAgent->makeAction( actingAgent->getTargetedStock(), currentTime) ;
 		}
+
+	
+
 		// From time to time, check state of order book
 			if(currentTime>i*printIntervals)
 			{
@@ -262,13 +265,20 @@ int main(int argc, char* argv[])
 	{
 		std::cout <<e.what()<< std::endl ;
 	}
-	
+	// Plot the process of prices
+		std::vector<int> historicPrices = myMarket->getOrderBook(1)->getHistoricPrices();
+		std::vector<double> transactionsTimes = myMarket->getOrderBook(1)->getTransactionsTimes();
+		Plot * plotter2 = new Plot() ;
+		plotter2->plotPrices(transactionsTimes,historicPrices);
+		std::cout<<"passé!!!" << std::endl;
+		int a;
+		std::cin>>a;
 	// Print stored history
-	myMarket->getOrderBook(1)->printStoredOrderBookHistory();
+	// myMarket->getOrderBook(1)->printStoredOrderBookHistory();
 	
 	
 	
-	// Stats on mid price
+/*	// Stats on mid price
 	Stats * myStats = new Stats(myMarket->getOrderBook(1)) ;
 	for(int samplingPeriod = 15 ; samplingPeriod<=960; samplingPeriod*=2)
 	{
@@ -302,5 +312,6 @@ int main(int argc, char* argv[])
 	delete myStats ;
 	delete myMarket ;
 	std::cout << "All done." << std::endl ;
+	*/
 	return 0;
 }
