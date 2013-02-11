@@ -28,10 +28,10 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 	aMarket->getOrderBook(a_orderBookId)->getOrderBookForPlot(price,priceQ);
 	last = aMarket->getOrderBook(a_orderBookId)->getPrice();
 
-	std::vector<int> historicPrices = aMarket->getOrderBook(a_orderBookId)->getHistoricPrices();
+	//std::vector<int> historicPrices = aMarket->getOrderBook(a_orderBookId)->getHistoricPrices();
 	std::vector<double> transactionsTimes = aMarket->getOrderBook(a_orderBookId)->getTransactionsTimes();
 
-	int sizePrices = historicPrices.size();
+	//int sizePrices = historicPrices.size();
 	int sizeTransactionsTimes = transactionsTimes.size();
 
 	//std::cout<<sizePrices<<std::endl;
@@ -41,23 +41,28 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 					std::cin>>a;
 				}*/
 	double variance=0;
-	if (sizePrices>1){
+	//if (sizePrices>1){
 
-		for (int z=0;z<(sizePrices-1);z++){
-			//std::cout<<historicPrices[z+1]<<std::endl;
-			//std::cout<<historicPrices[z]<<std::endl;
-			//int a;
-			//std::cin>>a;
-			variance += pow( log( historicPrices[z+1]/historicPrices[z]) ,2);
-		}
-	}
+	//	for (int z=0;z<(sizePrices-1);z++){
+	//		//std::cout<<historicPrices[z+1]<<std::endl;
+	//		//std::cout<<historicPrices[z]<<std::endl;
+	//		//int a;
+	//		//std::cin>>a;
+	//	
+	//		variance +=  pow(double( double( double(historicPrices[z+1])-double(historicPrices[z]))/double(historicPrices[z])),2) ;
+	//		
+	//	}
+	//}
 
 			
-	//std::cout<<"variance = "<<variance<<std::endl;
+	std::cout<<"Transaction Time = "<<transactionsTimes[sizeTransactionsTimes-1]/100.0<<std::endl;
 
-	variance = variance/transactionsTimes[sizeTransactionsTimes-1];
-	
+	if (transactionsTimes[sizeTransactionsTimes-1]!=0){
+		double annualTime = ((((transactionsTimes[sizeTransactionsTimes-1]/1000.0)/60)/60)/24)/365; 
+		variance = aMarket->getOrderBook(a_orderBookId)->getReturnsSumSquared()/annualTime;
+	}
 	double volatility = pow(variance, 0.5);
+
 	std::cout<<"vol = "<<volatility<<std::endl;
 	aplotter->plotOrderBook(price,priceQ,last, volatility);
 }

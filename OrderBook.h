@@ -134,6 +134,8 @@ class OrderBook
 
 		std::vector<double> getTransactionsTimes();
 
+		double getReturnsSumSquared();
+
 		/*! \brief returns the number of orders of the concerned agent at the specified price
 		 *
 		 */
@@ -199,6 +201,9 @@ class OrderBook
 		std::vector<int> m_historicPrices;
 		//contains the times of transactions (Market orders)
 		std::vector<double> m_transactionsTimes;
+
+		
+		double m_returnsSumSquared;
 
 };
 #endif // __ORDERBOOK__H__

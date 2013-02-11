@@ -22,7 +22,7 @@ OrderBook::OrderBook(Market *a_market, int a_identifier, int a_tickSize, int a_d
 	m_printHistoryonTheFly = false;
 	m_maxDepth = 4;
 	m_headerPrinted = false;
-
+	m_returnsSumSquared = 0.0;
 	m_historicPrices.push_back(10000); 
 	m_transactionsTimes.push_back(0);
 }
@@ -230,6 +230,9 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 			}
 			m_historicPrices.push_back(m_last);
 			m_transactionsTimes.push_back(m_linkToMarket->getCurrentTime());
+			int sizePrices = m_historicPrices.size();
+			double returns = double(double(double(m_historicPrices[sizePrices-1]) - double(m_historicPrices[sizePrices-2]))/double(m_historicPrices[sizePrices-2]));
+			m_returnsSumSquared+=pow(returns,2);
 		}
 		else
 		{
@@ -307,6 +310,9 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 			m_historicPrices.push_back(m_last);
 
 			m_transactionsTimes.push_back(m_linkToMarket->getCurrentTime());
+			int sizePrices = m_historicPrices.size();
+			double returns = double(double(double(m_historicPrices[sizePrices-1]) - double(m_historicPrices[sizePrices-2]))/double(m_historicPrices[sizePrices-2]));
+			m_returnsSumSquared+=pow(returns,2);
 
 		}
 		else
@@ -735,4 +741,8 @@ std::vector<int> OrderBook::getHistoricPrices(){
 
 std::vector<double> OrderBook::getTransactionsTimes(){
 	return m_transactionsTimes;
+}
+
+double OrderBook::getReturnsSumSquared(){
+	return m_returnsSumSquared;
 }

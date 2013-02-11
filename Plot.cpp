@@ -121,7 +121,7 @@ void Plot::plotOrderBook(	const std::vector<int> & x,
 	fprintf(m_gnuPlot, "set xr [99.7:100.3]\n");
 	fprintf(m_gnuPlot, "set yr [-250:250]\n");	
 	fprintf(m_gnuPlot, "set style fill solid 2.0 \n");
-	fprintf(m_gnuPlot, "set title \"Last Price = %f, Volatility = %d\"\n",  (double)last/100.0, volatility);
+	fprintf(m_gnuPlot, "set title \"Last Price = %f, Volatility = %f\"\n",  (double)last/100.0, volatility);
 	fprintf(m_gnuPlot, "set zeroaxis\n");
 	//fprintf(m_gnuPlot, "set xtic rotate by 45 font \",7\"");
 	fprintf(m_gnuPlot, "set xtics offset 0,-0.8,0 axis 0.01 rotate by 75\n");
