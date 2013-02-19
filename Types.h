@@ -16,7 +16,8 @@ typedef enum
 	LIMIT_SELL,
 	LIMIT_BUY,
 	CANCEL_BUY,
-	CANCEL_SELL
+	CANCEL_SELL,
+	CLEAR_OB
 } OrderType;
 
 /*! \brief Describes the state of an order

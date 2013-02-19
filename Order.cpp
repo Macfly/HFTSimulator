@@ -18,6 +18,16 @@ Order::Order(int a_asset , int a_owner , double	a_time , int a_price,
 	m_state					= ALIVE;
 	m_globalOrderIdentifier = a_globalOrderIdentifier;
 }
+
+Order::Order(double bidToSet, double askToSet, OrderType a_type ,
+				int a_globalOrderIdentifier)
+{
+	m_newAsk				= askToSet;
+	m_newBid				= bidToSet;
+	m_globalOrderIdentifier = a_globalOrderIdentifier;
+}
+
+
 Order::~Order()
 {
 

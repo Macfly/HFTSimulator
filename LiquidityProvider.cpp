@@ -120,7 +120,7 @@ OrderType LiquidityProvider::getOrderType() const
 	}
 	else if(l_orderTypeAlea<m_cancelBuyFrequency + m_cancelSellFrequency + m_buyFrequency)
 	{
-		std::cout << "LIMIT_BUY" << std::endl ;
+		//std::cout << "LIMIT_BUY" << std::endl ;
 		return LIMIT_BUY ;
 	}
 	else
@@ -130,103 +130,37 @@ OrderType LiquidityProvider::getOrderType() const
 	}
 }
 
-void LiquidityProvider::makeAction(int a_OrderBookId, double a_currentTime){
-	makeAction(a_OrderBookId, a_currentTime,true);
-}
-void LiquidityProvider::makeAction(int a_OrderBookId, double a_currentTime, bool init)
+void LiquidityProvider::makeAction(int a_OrderBookId, double a_currentTime)
 {
-	//m_linkToMarket->getOrderBook(a_OrderBookId)->cleanOrderBook();
-	//std::cout<<"limit order!!!"<<std::endl;
-	//OrderType thisOrderType = getOrderType() ;
-	//if(thisOrderType == CANCEL_BUY ||thisOrderType == CANCEL_SELL)
-	//{
-	//	if (a_currentTime == 0.0)// NO Cancellation at the initialisation of the process
-	//	{
-	//		return;
-	//	}
-	//	else
-	//	{
-	//		if(thisOrderType == CANCEL_BUY)
-	//		{
-	//			chooseOrdersToBeCanceled(a_OrderBookId,true,a_currentTime);
-	//			return;
-	//		}
-	//		else
-	//		{
-	//			chooseOrdersToBeCanceled(a_OrderBookId,false,a_currentTime);
-	//			return;
-	//		}
-	//	}
-	//}
-
-	//	int thisOrderPrice = getOrderPrice(a_OrderBookId, thisOrderType) ;
-	//	int thisOrderVolume = getOrderVolume(thisOrderPrice, a_OrderBookId, thisOrderType) ;
-	////	int thisOrderVolume = getOrderVolume() ;
-	//	submitOrder(
-	//		a_OrderBookId, a_currentTime,
-	//		thisOrderVolume,
-	//		thisOrderType,
-	//		thisOrderPrice
-	//	);
-	//	std::cout<<"LIMIT order!!!"<<std::endl;
-
-	int tickSize = m_linkToMarket->getOrderBook(a_OrderBookId)->getTickSize();
-	int i;
-	int end;
-	if (init){
-		i=1;end=20;
-	}
-	else{
-		i=0;end=19;
-	}
-	RandomNumberGenerator *rng = new RandomNumberGenerator();
-	DistributionUniform *u = new DistributionUniform(rng, 0, 1);
-	for (i;i<=end;i++){
-		if( u->nextRandom() > 0.5) {
-			int currentPriceAsk = m_linkToMarket->getOrderBook(a_OrderBookId)->getAskPrice() ;
-			//std::cout<<"current Ask : "<<currentPriceAsk<<std::endl;
-			//std::cout<<"current Bid : "<<currentPriceBid<<std::endl;
-
-			int buyPrice = currentPriceAsk-(i)*tickSize;
-			int buyOrderVolume = getOrderVolume(buyPrice, a_OrderBookId, LIMIT_BUY) ;
-			submitOrder(
-				a_OrderBookId, a_currentTime,
-				buyOrderVolume,
-				LIMIT_BUY,
-				buyPrice
-				);
-			int currentPriceBid = m_linkToMarket->getOrderBook(a_OrderBookId)->getBidPrice() ;
-			int sellPrice = currentPriceBid+(i)*tickSize;
-			int sellOrderVolume = getOrderVolume(sellPrice, a_OrderBookId, LIMIT_SELL) ;
-			submitOrder(
-				a_OrderBookId, a_currentTime,
-				sellOrderVolume,
-				LIMIT_SELL,
-				sellPrice
-				);
-		}else{
-			int currentPriceBid = m_linkToMarket->getOrderBook(a_OrderBookId)->getBidPrice() ;
-			int sellPrice = currentPriceBid+(i)*tickSize;
-			int sellOrderVolume = getOrderVolume(sellPrice, a_OrderBookId, LIMIT_SELL) ;
-			submitOrder(
-				a_OrderBookId, a_currentTime,
-				sellOrderVolume,
-				LIMIT_SELL,
-				sellPrice
-				);
-			int currentPriceAsk = m_linkToMarket->getOrderBook(a_OrderBookId)->getAskPrice() ;
-
-			int buyPrice = currentPriceAsk-(i)*tickSize;
-			int buyOrderVolume = getOrderVolume(buyPrice, a_OrderBookId, LIMIT_BUY) ;
-			submitOrder(
-				a_OrderBookId, a_currentTime,
-				buyOrderVolume,
-				LIMIT_BUY,
-				buyPrice
-				);
+	OrderType thisOrderType = getOrderType() ;
+		if(thisOrderType == CANCEL_BUY ||thisOrderType == CANCEL_SELL)
+		{
+			if (a_currentTime == 0.0)// NO Cancellation at the initialisation of the process
+			{
+				return;
+			}
+			else
+			{
+				if(thisOrderType == CANCEL_BUY)
+				{
+					chooseOrdersToBeCanceled(a_OrderBookId,true,a_currentTime);
+					return;
+				}
+				else
+				{
+					chooseOrdersToBeCanceled(a_OrderBookId,false,a_currentTime);
+					return;
+				}
+			}
 		}
-	}
-
+		int thisOrderVolume = getOrderVolume() ;
+		int thisOrderPrice = getOrderPrice(a_OrderBookId, thisOrderType) ;
+		submitOrder(
+			a_OrderBookId, a_currentTime,
+			thisOrderVolume,
+			thisOrderType,
+			thisOrderPrice
+		);	
 }
 
 void LiquidityProvider::chooseOrdersToBeCanceled(int a_OrderBookId, bool a_buySide, double a_time)
@@ -250,5 +184,9 @@ void LiquidityProvider::processInformation()
 {
 	// For exemple, read the market book history and decide to do something within a reaction time
 
+}
+
+void LiquidityProvider::cleanPending(){
+	m_pendingOrders.clear();
 }
 

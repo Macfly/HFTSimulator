@@ -30,6 +30,8 @@ class Order
 		Order(int a_asset , int a_owner , double	a_time , int a_price,
 					int	a_volume , OrderType a_type ,
 					int a_globalOrderIdentifier);
+		Order(double bidToSet, double askToSet, OrderType a_type ,
+				int a_globalOrderIdentifier);
 		virtual ~Order();
 
 		int getUnderlying() ;
@@ -57,6 +59,10 @@ class Order
 		OrderType		m_type;
 		OrderState		m_state;
 		int				m_globalOrderIdentifier;
+
+		double			m_newBid;
+		double			m_newAsk;
+
 		std::vector < ExecutionHistory> m_executionHistory;
 
 };

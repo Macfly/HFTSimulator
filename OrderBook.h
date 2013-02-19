@@ -32,6 +32,8 @@ class OrderBook
 		OrderBook(Market *a_market, int a_identifier, int a_tickSize, int a_defaultBid, int a_defaultAsk);
 		virtual ~OrderBook();
 
+
+
 		int getIdentifier() const ;
 
 		/*! \brief returns the ask price
@@ -138,6 +140,12 @@ class OrderBook
 		 */
 		std::map< int , std::list < Order > > getAskQueue() const;
 
+		std::vector<int> getHistoricPrices();
+
+		std::vector<double> getTransactionsTimes();
+
+		double getReturnsSumSquared();
+
 		/*! \brief returns the number of orders of the concerned agent at the specified price
 		 *
 		 */
@@ -205,11 +213,19 @@ class OrderBook
 		bool m_printHistoryonTheFly;
 		int m_maxDepth;
 		bool m_headerPrinted;
+
+		//contains the prices of the asset
+		std::vector<int> m_historicPrices;
+		//contains the times of transactions (Market orders)
+		std::vector<double> m_transactionsTimes;
+
 		
 		concurrency::concurrent_queue<Order> orders;
 		bool open;
 		concurrency::concurrent_unordered_map<int, int> bids_quantity;
 		concurrency::concurrent_unordered_map<int, int> asks_quantity;
+
+		double m_returnsSumSquared;
 
 };
 template <typename K, typename V>

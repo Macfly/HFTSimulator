@@ -53,13 +53,15 @@ class LiquidityProvider : public Agent {
 		 *
 		 */
 		virtual void makeAction(int a_OrderBookId, double currentTime);	
-
-		virtual void makeAction(int a_OrderBookId, double currentTime, bool init);	 
 		/*! \brief processes information after the agent is notified of a market event
 		 *
 		 * This method can be used to implement a feedback mechanism. After notification of a market event, this method is called to allow the agent to react to the market event.
 		 */
 		virtual void processInformation();
+
+		void cleanPending();
+
+
 	protected:
 		/*! \brief returns the order type
 		 *
@@ -89,6 +91,8 @@ class LiquidityProvider : public Agent {
 		 *
 		 */
 		void chooseOrdersToBeCanceled(int a_OrderBookId, bool a_buySide, double a_time);
+
+		
 		
 	private:
 		
