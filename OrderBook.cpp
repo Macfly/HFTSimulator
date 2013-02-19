@@ -7,6 +7,7 @@
 #include <sstream>
 #include <fstream>
 #include <cstdlib>
+#include <boost/foreach.hpp>
 
 OrderBook::OrderBook(Market *a_market, int a_identifier, int a_tickSize, int a_defaultBid, int a_defaultAsk)
 {
@@ -121,31 +122,30 @@ int OrderBook::getDistanceToBestOppositeQuote(int a_price) const
 }
 void OrderBook::runOrderBook()
 {
-	std::cout<<"thread started "<<std::endl;
 	Order orderToExecute;
 	while(open){
 		if(orders.try_pop(orderToExecute)){
 			switch(orderToExecute.m_type)
 			{
 			case LIMIT_SELL:
-				std::cout << "limit sell :" << std::endl;
+				//std::cout << "limit sell :" << std::endl;
 				processLimitSellOrder(orderToExecute);
 				break;
 			case LIMIT_BUY:
-				std::cout << "limit buy : " << std::endl;
+				//std::cout << "limit buy : " << std::endl;
 				processLimitBuyOrder(orderToExecute);
 				break;
 			case MARKET_SELL:
-				std::cout << "market sell" << std::endl;
+				//std::cout << "market sell" << std::endl;
 				processMarketSellOrder(orderToExecute);
 				break;
 			case MARKET_BUY:
-				std::cout << "market buy" << std::endl;
+				//std::cout << "market buy" << std::endl;
 				processMarketBuyOrder(orderToExecute);
 				break;
 			case CLEAR_OB:
-				cleanOrderBook();				
-				//setDefaultBidAsk(orderToExecute.m_newBid, orderToExecute.m_newAsk);
+				/*cleanOrderBook();				
+				setDefaultBidAsk(orderToExecute.m_newBid, orderToExecute.m_newAsk);*/
 				break;
 			default:
 				break;
@@ -173,6 +173,18 @@ void OrderBook::processLimitBuyOrder(Order & a_order)
 		m_bids[a_order.m_price].push_back(a_order);
 		bids_quantity[a_order.m_price] = get_value_map( bids_quantity, a_order.m_price, 0 ) + a_order.getVolume();
 		totalBidQuantity += a_order.getVolume();
+
+		if(totalBidQuantity > 100000 || totalBidQuantity < -100000){
+
+			std::cout << "processLimitBuyOrder " <<std::endl;
+
+			std::cout << "price " << a_order.m_price <<std::endl;
+			std::cout << "owner " << a_order.m_owner <<std::endl;
+			std::cout << "type " << a_order.m_type <<std::endl;
+
+			std::string lol;
+			std::cin >> lol;
+		}
 
 		// If this order is above bid[MAX_LEVEL], then it needs to be recorded in history
 		//if(m_storeOrderBookHistory)
@@ -202,6 +214,22 @@ void OrderBook::processLimitSellOrder(Order & a_order)
 		m_asks[a_order.m_price].push_back(a_order);
 		asks_quantity[a_order.m_price] = get_value_map( asks_quantity, a_order.m_price, 0 ) + a_order.getVolume();
 		totalAskQuantity += a_order.getVolume();
+
+
+		if(totalAskQuantity > 100000 || totalAskQuantity < -100000){
+
+			std::cout << "processLimitSellOrder" <<std::endl;
+
+			std::cout << "price " << a_order.m_price <<std::endl;
+			std::cout << "owner " << a_order.m_owner <<std::endl;
+			std::cout << "type " << a_order.m_type <<std::endl;
+
+
+			std::string lol;
+			std::cin >> lol;
+		}
+
+
 		// If this order is above bid[MAX_LEVEL], then it needs to be recorded in history
 		//if(m_storeOrderBookHistory)
 		//{
@@ -237,10 +265,30 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 					a_order.m_volume = 0;
 					m_last = l_fifoOrder->m_price;
 					m_lastQ = l_fifoOrder->m_volume;
-
+					asks_quantity[l_fifoOrder->m_price] -= l_fifoOrder->m_volume;
+					totalAskQuantity -= l_fifoOrder->m_volume;
 					iter->second.pop_front();
-					asks_quantity[a_order.m_price] -= a_order.getVolume();
-					totalAskQuantity -= a_order.getVolume();
+
+
+
+					if(totalAskQuantity > 100000 || totalAskQuantity < -100000){
+
+						std::cout << "processMarketBuyOrder   ==" <<std::endl;
+						std::cout << "totalBidQuantity " << totalAskQuantity <<std::endl;
+
+						std::cout << "price " << a_order.m_price <<std::endl;
+						std::cout << "owner " << a_order.m_owner <<std::endl;
+						std::cout << "type " << a_order.m_type <<std::endl;
+						std::cout << "quanti " << a_order.m_volume <<std::endl;
+
+						std::cout << "fifo prix " << l_fifoOrder->m_price <<std::endl;
+						std::cout << "fifo quanti " << l_fifoOrder->m_volume <<std::endl;
+
+						std::string lol;
+						std::cin >> lol;
+					}
+
+
 				}
 				catch (int e)
 				{
@@ -263,11 +311,26 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 					//m_linkToMarket->notifyPartialExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,a_order.m_volume,l_fifoOrder->m_price);
 					//m_linkToMarket->notifyExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
 					l_fifoOrder->m_volume -= a_order.m_volume;
-					asks_quantity[a_order.m_price] -= a_order.getVolume();
+					asks_quantity[l_fifoOrder->m_price] -= a_order.getVolume();
 					totalAskQuantity -= a_order.getVolume();
 					a_order.m_volume = 0;
 					m_last = l_fifoOrder->m_price;
-					m_lastQ = l_fifoOrder->m_volume;
+					m_lastQ = a_order.m_volume;
+
+
+
+					if(totalAskQuantity > 100000 || totalAskQuantity < -100000){
+
+						std::cout << "processMarketBuyOrder   >" <<std::endl;
+
+						std::cout << "price " << a_order.m_price <<std::endl;
+						std::cout << "owner " << a_order.m_owner <<std::endl;
+						std::cout << "type " << a_order.m_type <<std::endl;
+
+
+						std::string lol;
+						std::cin >> lol;
+					}
 				}
 				catch (int e)
 				{
@@ -289,14 +352,26 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 					//m_linkToMarket->notifyExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
 					//m_linkToMarket->notifyPartialExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_volume,l_fifoOrder->m_price);
 					a_order.m_volume -= l_fifoOrder->m_volume;
-					asks_quantity[a_order.m_price] -= a_order.getVolume();
-					totalAskQuantity -= a_order.getVolume();
+					asks_quantity[l_fifoOrder->m_price] -= l_fifoOrder->m_volume;
+					totalAskQuantity -= l_fifoOrder->m_volume;
 					m_last = l_fifoOrder->m_price;
 					m_lastQ = l_fifoOrder->m_volume;
 
 					iter->second.pop_front();
-					asks_quantity[a_order.m_price] -= a_order.getVolume();
-					totalAskQuantity -= a_order.getVolume();
+
+
+					if(totalAskQuantity > 100000 || totalAskQuantity < -100000){
+
+						std::cout << "processMarketBuyOrder   <" <<std::endl;
+
+						std::cout << "price " << a_order.m_price <<std::endl;
+						std::cout << "owner " << a_order.m_owner <<std::endl;
+						std::cout << "type " << a_order.m_type <<std::endl;
+
+
+						std::string lol;
+						std::cin >> lol;
+					}
 				}
 				catch (int e)
 				{
@@ -362,9 +437,29 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 					a_order.m_volume = 0;
 					m_last = l_fifoOrder->m_price;
 					m_lastQ = l_fifoOrder->m_volume;
+					bids_quantity[l_fifoOrder->m_price] -= l_fifoOrder->m_volume;
+					totalBidQuantity -= l_fifoOrder->m_volume;
 					iter->second.pop_front();
-					bids_quantity[a_order.m_price] -= a_order.getVolume();
-					totalBidQuantity -= a_order.getVolume();
+
+
+					if(totalBidQuantity > 100000 || totalBidQuantity < -100000){
+
+						std::cout << "processMarketSellOrder   ==" <<std::endl;
+						std::cout << "totalBidQuantity " << totalBidQuantity <<std::endl;
+
+						std::cout << "price " << a_order.m_price <<std::endl;
+						std::cout << "owner " << a_order.m_owner <<std::endl;
+						std::cout << "type " << a_order.m_type <<std::endl;
+						std::cout << "quanti " << a_order.m_volume <<std::endl;
+
+						std::cout << "fifo prix " << l_fifoOrder->m_price <<std::endl;
+						std::cout << "fifo quanti " << l_fifoOrder->m_volume <<std::endl;
+
+						std::string lol;
+						std::cin >> lol;
+					}
+
+
 				}
 				catch (int e)
 				{
@@ -387,11 +482,27 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 					//m_linkToMarket->notifyPartialExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,a_order.m_volume,l_fifoOrder->m_price);
 					//m_linkToMarket->notifyExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
 					l_fifoOrder->m_volume -= a_order.m_volume;
-					bids_quantity[a_order.m_price] -= a_order.getVolume();
+					bids_quantity[l_fifoOrder->m_price] -= a_order.getVolume();
 					totalBidQuantity -= a_order.getVolume();
 					a_order.m_volume = 0;
 					m_last = l_fifoOrder->m_price;
 					m_lastQ = l_fifoOrder->m_volume;
+
+
+					if(totalBidQuantity > 100000 || totalBidQuantity < -100000){
+
+						std::cout << "processMarketSellOrder   >" <<std::endl;
+
+						std::cout << "price " << a_order.m_price <<std::endl;
+						std::cout << "owner " << a_order.m_owner <<std::endl;
+						std::cout << "type " << a_order.m_type <<std::endl;
+
+
+						std::string lol;
+						std::cin >> lol;
+					}
+
+
 				}
 				catch (int e)
 				{
@@ -413,14 +524,26 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 					//m_linkToMarket->notifyExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
 					//m_linkToMarket->notifyPartialExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_volume,l_fifoOrder->m_price);
 					a_order.m_volume -= l_fifoOrder->m_volume;
-					bids_quantity[a_order.m_price] -= a_order.getVolume();
-					totalBidQuantity -= a_order.getVolume();
+					bids_quantity[l_fifoOrder->m_price] -= l_fifoOrder->m_volume;
+					totalBidQuantity -= l_fifoOrder->m_volume;
 					m_last = l_fifoOrder->m_price;
 					m_lastQ = l_fifoOrder->m_volume;
 
 					iter->second.pop_front();
-					bids_quantity[a_order.m_price] -= a_order.getVolume();
-					totalBidQuantity -= a_order.getVolume();
+
+					if(totalBidQuantity > 100000 || totalBidQuantity < -100000){
+
+						std::cout << "processMarketSellOrder   <" <<std::endl;
+
+						std::cout << "price " << a_order.m_price <<std::endl;
+						std::cout << "owner " << a_order.m_owner <<std::endl;
+						std::cout << "type " << a_order.m_type <<std::endl;
+
+
+						std::string lol;
+						std::cin >> lol;
+					}
+
 				}
 				catch (int e)
 				{
@@ -638,30 +761,100 @@ int OrderBook::getPrice() const
 	return m_last;
 }
 
-void OrderBook::getOrderBookForPlot(std::vector<int> &a_price,std::vector<int> &a_priceQ) const
+//void OrderBook::getOrderBookForPlot(std::vector<int> &a_price,std::vector<int> &a_priceQ) const
+//{
+//
+//	std::map< int , std::list < Order > >::const_iterator itBids; 
+//	std::map< int , std::list < Order > >::const_iterator itAsks; 
+//
+//	try{
+//
+//		std::vector<LimitOrders> l_vector;
+//		for(itBids = m_bids.begin();itBids != m_bids.end();itBids++)
+//		{
+//			int l_bid = (*itBids).first;
+//			a_price.push_back(l_bid);
+//			a_priceQ.push_back(-1*getBidQuantityForThisPrice(l_bid));
+//		}
+//		for(itAsks = m_asks.begin();itAsks != m_asks.end();itAsks++)
+//		{
+//			int l_ask = (*itAsks).first;
+//			a_price.push_back(l_ask);
+//			a_priceQ.push_back(getAskQuantityForThisPrice(l_ask));
+//		}
+//	}
+//	catch (int e)
+//	{
+//		std::cout << "An exception occurred. Exception Nr. " << e << std::endl;
+//	}
+//}
+
+void OrderBook::getOrderBookForPlot(std::vector<int> &a_price, std::vector<int> &a_priceQ)
 {
+	concurrency::concurrent_unordered_map<int, int>::const_iterator itBids; 
+	concurrency::concurrent_unordered_map<int, int>::const_iterator itAsks; 
 
-	std::map< int , std::list < Order > >::const_iterator itBids; 
-	std::map< int , std::list < Order > >::const_iterator itAsks; 
-
-	try{
-
-		std::vector<LimitOrders> l_vector;
-		for(itBids = m_bids.begin();itBids != m_bids.end();itBids++)
-		{
-			int l_bid = (*itBids).first;
-			a_price.push_back(l_bid);
-			a_priceQ.push_back(-1*getBidQuantityForThisPrice(l_bid));
-		}
-		for(itAsks = m_asks.begin();itAsks != m_asks.end();itAsks++)
-		{
-			int l_ask = (*itAsks).first;
-			a_price.push_back(l_ask);
-			a_priceQ.push_back(getAskQuantityForThisPrice(l_ask));
+	std::vector<LimitOrders> l_vector;
+	for(itBids = bids_quantity.begin();itBids != bids_quantity.end();itBids++)
+	{
+		//std::cout << "p: " << (*itBids).first << "q: " << (*itBids).second << std::endl;
+		if((*itBids).second !=0){
+			a_price.push_back((*itBids).first);
+			a_priceQ.push_back(-1*(*itBids).second);
 		}
 	}
-	catch (int e)
+
+	std::cout << "ask time: " << std::endl;
+
+	for(itAsks = asks_quantity.begin();itAsks != asks_quantity.end();itAsks++)
 	{
-		std::cout << "An exception occurred. Exception Nr. " << e << std::endl;
+		//std::cout << "p: " << (*itAsks).first << "q: " << (*itAsks).second << std::endl;
+		if((*itAsks).second !=0){
+			a_price.push_back((*itAsks).first);
+			a_priceQ.push_back((*itAsks).second);
+		}
+	}
+
+	//std::cout << "sorted  " << std::endl;
+
+	quickSort(a_price, a_priceQ, 0, a_price.size()-1);
+
+	for(int i = 0; i < a_price.size();i++){
+		std::cout<<"sorted       p: " << a_price[i] << " q: " << a_priceQ[i] << std::endl;
 	}
 }
+
+void OrderBook::quickSort(std::vector<int> &price, std::vector<int> &quantity, int left, int right)  
+{  
+	int i=left, j=right;  
+	int pivot = price[(i+j)/2];  
+
+	// partition  
+	while (i <= j) {  
+		while (price[i] < pivot)  
+			i++;  
+
+		while (price[j] > pivot)  
+			j--;  
+
+		if (i <= j) {  
+			int tmp = price[i];  
+			price[i] = price[j];  
+			price[j] = tmp;
+
+			int tmpQ = quantity[i];  
+			quantity[i] = quantity[j];  
+			quantity[j] = tmpQ;
+
+			i++;  
+			j--;  
+		}  
+	}  
+
+	// recursion  
+	if (left < j)  
+		quickSort(price, quantity, left, j);  
+
+	if (i < right)  
+		quickSort(price, quantity, i, right);  
+}  

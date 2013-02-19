@@ -156,7 +156,8 @@ void LiquidityProvider::makeAction(int a_OrderBookId, double a_currentTime)
 		int thisOrderVolume = getOrderVolume() ;
 		int thisOrderPrice = getOrderPrice(a_OrderBookId, thisOrderType) ;
 		submitOrder(
-			a_OrderBookId, a_currentTime,
+			a_OrderBookId, 
+			a_currentTime,
 			thisOrderVolume,
 			thisOrderType,
 			thisOrderPrice

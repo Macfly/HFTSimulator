@@ -32,8 +32,6 @@ class OrderBook
 		OrderBook(Market *a_market, int a_identifier, int a_tickSize, int a_defaultBid, int a_defaultAsk);
 		virtual ~OrderBook();
 
-
-
 		int getIdentifier() const ;
 
 		/*! \brief returns the ask price
@@ -128,7 +126,7 @@ class OrderBook
 		/*! \brief prepares data to be plotted in Gnuplot
 		 *
 		 */
-		void getOrderBookForPlot(std::vector<int> &a_price,std::vector<int> &a_priceQ) const;
+		void getOrderBookForPlot(std::vector<int> &a_price,std::vector<int> &a_priceQ);
 
 		/*! \brief returns the bid Queue
 		 *
@@ -159,8 +157,6 @@ class OrderBook
 		const std::vector<OrderBookHistory>  & getOrderBookHistory() const;
 		const std::vector<Order>  & getOrderHistory() const;
 		
-		
-		
 		Market * getLinkToMarket() ;
 
 		void cleanOrderBook();
@@ -171,7 +167,8 @@ class OrderBook
 
 		void OrderBook::closeOrderBook();
 
-		
+		void OrderBook::quickSort(std::vector<int> &price, std::vector<int> &quantity, int left, int right);
+
 	private:
 		void printOrderBookHistoryOnTheFly(double a_time);
 		void storeOrderBookHistory(double a_time);
@@ -184,10 +181,6 @@ class OrderBook
 		void printHeader(std::ofstream & a_outFile) const;
 
 
-
-		
-		
-		
 	private:
 		int m_identifier;
 		Market * m_linkToMarket; // DO NOT DELETE, JUST A LINK
