@@ -57,27 +57,17 @@ int OrderBook::getIdentifier() const
 }
 int OrderBook::getAskPrice() const
 {
-	try{
-		if (m_asks.empty())
-			return m_defaultAsk;
-		else
-			return m_asks.begin()->first;
-	}catch (int e)
-	{
-		std::cout << "An exception occurred. Exception Nr. " << e << std::endl;
-	}
+	if (m_asks.empty())
+		return m_defaultAsk;
+	else
+		return m_asks.begin()->first;
 }
 int OrderBook::getBidPrice() const
 {
-	try{
-		if (m_bids.empty())
-			return m_defaultBid;
-		else
-			return m_bids.rbegin()->first;
-	}catch (int e)
-	{
-		std::cout << "An exception occurred. Exception Nr. " << e << std::endl;
-	}
+	if (m_bids.empty())
+		return m_defaultBid;
+	else
+		return m_bids.rbegin()->first;
 }
 int OrderBook::getTickSize() const
 {
@@ -233,12 +223,6 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 		{
 			try{
 				iter = m_asks.begin();
-				if(iter == m_asks.end()){
-					std::cout << "nothing " << std::endl;
-
-					std::string ntm;
-					std::cin>>ntm;
-				}
 				l_fifoOrder = &iter->second.front();
 			}catch (int e)
 			{
@@ -248,8 +232,8 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 			{
 				try
 				{
-					m_linkToMarket->notifyExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
-					m_linkToMarket->notifyExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
+					//m_linkToMarket->notifyExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
+					//m_linkToMarket->notifyExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
 					a_order.m_volume = 0;
 					m_last = l_fifoOrder->m_price;
 					m_lastQ = l_fifoOrder->m_volume;
@@ -276,8 +260,8 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 			{
 				try
 				{
-					m_linkToMarket->notifyPartialExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,a_order.m_volume,l_fifoOrder->m_price);
-					m_linkToMarket->notifyExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
+					//m_linkToMarket->notifyPartialExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,a_order.m_volume,l_fifoOrder->m_price);
+					//m_linkToMarket->notifyExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
 					l_fifoOrder->m_volume -= a_order.m_volume;
 					asks_quantity[a_order.m_price] -= a_order.getVolume();
 					totalAskQuantity -= a_order.getVolume();
@@ -302,8 +286,8 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 			{
 				try
 				{
-					m_linkToMarket->notifyExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
-					m_linkToMarket->notifyPartialExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_volume,l_fifoOrder->m_price);
+					//m_linkToMarket->notifyExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
+					//m_linkToMarket->notifyPartialExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_volume,l_fifoOrder->m_price);
 					a_order.m_volume -= l_fifoOrder->m_volume;
 					asks_quantity[a_order.m_price] -= a_order.getVolume();
 					totalAskQuantity -= a_order.getVolume();
@@ -363,14 +347,6 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 		{
 			try{
 				iter = m_bids.rbegin();
-				if(iter == m_bids.rend()){
-					std::cout << "nothing " << std::endl;
-
-					std::string ntm;
-					std::cin>>ntm;
-
-				}
-
 				l_fifoOrder = &iter->second.front();
 			}
 			catch (int e)
@@ -381,8 +357,8 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 			{
 				try
 				{
-					m_linkToMarket->notifyExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
-					m_linkToMarket->notifyExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
+					//m_linkToMarket->notifyExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
+					//m_linkToMarket->notifyExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
 					a_order.m_volume = 0;
 					m_last = l_fifoOrder->m_price;
 					m_lastQ = l_fifoOrder->m_volume;
@@ -408,8 +384,8 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 			{
 				try
 				{
-					m_linkToMarket->notifyPartialExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,a_order.m_volume,l_fifoOrder->m_price);
-					m_linkToMarket->notifyExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
+					//m_linkToMarket->notifyPartialExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,a_order.m_volume,l_fifoOrder->m_price);
+					//m_linkToMarket->notifyExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
 					l_fifoOrder->m_volume -= a_order.m_volume;
 					bids_quantity[a_order.m_price] -= a_order.getVolume();
 					totalBidQuantity -= a_order.getVolume();
@@ -434,8 +410,8 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 			{
 				try
 				{
-					m_linkToMarket->notifyExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
-					m_linkToMarket->notifyPartialExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_volume,l_fifoOrder->m_price);
+					//m_linkToMarket->notifyExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
+					//m_linkToMarket->notifyPartialExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_volume,l_fifoOrder->m_price);
 					a_order.m_volume -= l_fifoOrder->m_volume;
 					bids_quantity[a_order.m_price] -= a_order.getVolume();
 					totalBidQuantity -= a_order.getVolume();
@@ -471,7 +447,6 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 			}
 
 			m_historicPrices.push_back(m_last);
-
 			m_transactionsTimes.push_back(m_linkToMarket->getCurrentTime());
 			int sizePrices = m_historicPrices.size();
 			double returns = double(double(double(m_historicPrices[sizePrices-1]) - double(m_historicPrices[sizePrices-2]))/double(m_historicPrices[sizePrices-2]));
@@ -689,7 +664,4 @@ void OrderBook::getOrderBookForPlot(std::vector<int> &a_price,std::vector<int> &
 	{
 		std::cout << "An exception occurred. Exception Nr. " << e << std::endl;
 	}
-
-
-
 }

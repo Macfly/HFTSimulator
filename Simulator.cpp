@@ -24,25 +24,25 @@
 
 void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 {
-	std::vector<int> price;
-	std::vector<int> priceQ;
-	int last;
-	aMarket->getOrderBook(a_orderBookId)->getOrderBookForPlot(price,priceQ);
-	last = aMarket->getOrderBook(a_orderBookId)->getPrice();
+	//std::vector<int> price;
+	//std::vector<int> priceQ;
+	//int last;
+	//aMarket->getOrderBook(a_orderBookId)->getOrderBookForPlot(price,priceQ);
+	//last = aMarket->getOrderBook(a_orderBookId)->getPrice();
 
 	//std::vector<int> historicPrices = aMarket->getOrderBook(a_orderBookId)->getHistoricPrices();
-	std::vector<double> transactionsTimes = aMarket->getOrderBook(a_orderBookId)->getTransactionsTimes();
+	//std::vector<double> transactionsTimes = aMarket->getOrderBook(a_orderBookId)->getTransactionsTimes();
 
 	//int sizePrices = historicPrices.size();
-	int sizeTransactionsTimes = transactionsTimes.size();
+	//int sizeTransactionsTimes = transactionsTimes.size();
 
 	//std::cout<<sizePrices<<std::endl;
-	/*for (int k=0;k<sizePrices;k++){
-					int a;
-					std::cout<< aMarket->getOrderBook(1)->getHistoricPrices()[k]<<std::endl;
-					std::cin>>a;
-				}*/
-	double variance=0;
+	///*for (int k=0;k<sizePrices;k++){
+	//				int a;
+	//				std::cout<< aMarket->getOrderBook(1)->getHistoricPrices()[k]<<std::endl;
+	//				std::cin>>a;
+	//			}*/
+	//double variance=0;
 	//if (sizePrices>1){
 
 	//	for (int z=0;z<(sizePrices-1);z++){
@@ -50,22 +50,18 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 	//		//std::cout<<historicPrices[z]<<std::endl;
 	//		//int a;
 	//		//std::cin>>a;
-	//	
 	//		variance +=  pow(double( double( double(historicPrices[z+1])-double(historicPrices[z]))/double(historicPrices[z])),2) ;
-	//		
 	//	}
 	//}
-			
-	std::cout<<"Transaction Time = "<<transactionsTimes[sizeTransactionsTimes-1]/100.0<<std::endl;
+	//std::cout<<"Transaction Time = "<<transactionsTimes[sizeTransactionsTimes-1]/100.0<<std::endl;
+	//if (transactionsTimes[sizeTransactionsTimes-1]!=0){
+	//	double annualTime = ((((transactionsTimes[sizeTransactionsTimes-1]/1000.0)/60)/60)/24)/365; 
+	//	variance = aMarket->getOrderBook(a_orderBookId)->getReturnsSumSquared()/annualTime;
+	//}
+	//double volatility = pow(variance, 0.5);
 
-	if (transactionsTimes[sizeTransactionsTimes-1]!=0){
-		double annualTime = ((((transactionsTimes[sizeTransactionsTimes-1]/1000.0)/60)/60)/24)/365; 
-		variance = aMarket->getOrderBook(a_orderBookId)->getReturnsSumSquared()/annualTime;
-	}
-	double volatility = pow(variance, 0.5);
-
-	std::cout<<"vol = "<<volatility<<std::endl;
-	aplotter->plotOrderBook(price,priceQ,last, volatility);
+	//std::cout<<"vol = "<<volatility<<std::endl;
+	//aplotter->plotOrderBook(price,priceQ,last, volatility);
 }
 
 int nbAssets = 1;
@@ -166,7 +162,7 @@ int main(int argc, char* argv[])
 		uniformCancellationProbability
 		) ;
 	myMarket->registerAgent(myLiquidityProvider);
-	
+
 	//creation du group de thread
 	boost::thread_group actors;
 	//boost::thread t(boost::bind(&OrderBook::runOrderBook, myMarket->getOrderBook(1)));
@@ -203,7 +199,7 @@ int main(int argc, char* argv[])
 	std::string input;
 	std::cin >> input;
 
-		std::cout 
+	std::cout 
 		<< "Time 0 : [bid ; ask] = " 
 		<< "[" << myMarket->getOrderBook(1)->getBidPrice()/100.0 << " ; "
 		<< myMarket->getOrderBook(1)->getAskPrice()/100.0 << "]"
@@ -214,7 +210,6 @@ int main(int argc, char* argv[])
 	std::cout << "Order book initialized." << std::endl ;
 
 	std::cin >> input;
-
 
 	std::vector<double>  MidPriceTimeseries ;
 	try{
@@ -253,7 +248,7 @@ int main(int argc, char* argv[])
 			//else{	
 			//	// Submit order
 			//std::cout << "agent type " << actingAgent->getAgentType() << std::endl;
-				actingAgent->makeAction( actingAgent->getTargetedStock(), currentTime) ;
+			actingAgent->makeAction( actingAgent->getTargetedStock(), currentTime) ;
 			//}	// From time to time, check state of order book
 			if(currentTime>i*printIntervals)
 			{
@@ -285,9 +280,9 @@ int main(int argc, char* argv[])
 				//	std::cout<< myMarket->getOrderBook(1)->getHistoricPrices()[k]<<std::endl;
 				//	std::cin>>a;
 				//}
-				
+
 				// Update sampling
-				
+
 				i++;
 			}
 			// Update clock
@@ -299,35 +294,35 @@ int main(int argc, char* argv[])
 		std::cout <<e.what()<< std::endl ;
 	}
 	// Plot the process of prices
-		std::vector<int> historicPrices = myMarket->getOrderBook(1)->getHistoricPrices();
-		std::vector<double> transactionsTimes = myMarket->getOrderBook(1)->getTransactionsTimes();
-		Plot * plotter2 = new Plot() ;
-		plotter2->plotPrices(transactionsTimes,historicPrices);
-		std::cout<<"passé!!!" << std::endl;
-		int b;
-		std::cin>>b;
+	std::vector<int> historicPrices = myMarket->getOrderBook(1)->getHistoricPrices();
+	std::vector<double> transactionsTimes = myMarket->getOrderBook(1)->getTransactionsTimes();
+	Plot * plotter2 = new Plot() ;
+	plotter2->plotPrices(transactionsTimes,historicPrices);
+	std::cout<<"passé!!!" << std::endl;
+	int b;
+	std::cin>>b;
 	// Print stored history
 	// myMarket->getOrderBook(1)->printStoredOrderBookHistory();
-	
-	
-	
-/*	// Stats on mid price
+
+
+
+	/*	// Stats on mid price
 	Stats * myStats = new Stats(myMarket->getOrderBook(1)) ;
 	for(int samplingPeriod = 15 ; samplingPeriod<=960; samplingPeriod*=2)
 	{
-		myStats->printTimeSeries(MID,samplingPeriod) ;
-		std::vector<double> midPrice = myStats->getPriceTimeSeries(MID,samplingPeriod) ;
-		std::vector<double> MidPriceLogReturns ;
-		for(unsigned int k=1; k<midPrice.size() ; k++){
-			MidPriceLogReturns.push_back(log(midPrice[k])-log(midPrice[k-1])) ;
-		}
-		std::ostringstream dataLabel ;
-		dataLabel << "MidPrice_" << samplingPeriod << "_LogReturns" ;
-		myStats->plotPDF(dataLabel.str().c_str(),MidPriceLogReturns) ;
-		myStats->plotNormalizedPDF(dataLabel.str().c_str(),MidPriceLogReturns) ;
-		myStats->printAutocorrelation(dataLabel.str(), MidPriceLogReturns,(int) MidPriceLogReturns.size()/2, 1) ;
+	myStats->printTimeSeries(MID,samplingPeriod) ;
+	std::vector<double> midPrice = myStats->getPriceTimeSeries(MID,samplingPeriod) ;
+	std::vector<double> MidPriceLogReturns ;
+	for(unsigned int k=1; k<midPrice.size() ; k++){
+	MidPriceLogReturns.push_back(log(midPrice[k])-log(midPrice[k-1])) ;
 	}
-	
+	std::ostringstream dataLabel ;
+	dataLabel << "MidPrice_" << samplingPeriod << "_LogReturns" ;
+	myStats->plotPDF(dataLabel.str().c_str(),MidPriceLogReturns) ;
+	myStats->plotNormalizedPDF(dataLabel.str().c_str(),MidPriceLogReturns) ;
+	myStats->printAutocorrelation(dataLabel.str(), MidPriceLogReturns,(int) MidPriceLogReturns.size()/2, 1) ;
+	}
+
 	// Stats on spread
 	std::vector<double> spreadTimeSeries = myStats->getPriceTimeSeries(SPREAD,0.5) ;
 	myStats->plotPDF("Spread",spreadTimeSeries) ;
