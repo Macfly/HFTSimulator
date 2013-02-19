@@ -75,9 +75,9 @@ int storedDepth = 1;
 double meanActionTimeLP = 0.5;
 int meanVolumeLP = 100;
 int meanPriceLagLP = 6;
-double buyFrequencyLP = 0.25;
-double cancelBuyFrequencyLP = 0.25;
-double cancelSellFrequencyLP = 0.25;
+double buyFrequencyLP = 0.5;
+double cancelBuyFrequencyLP = 0.0;
+double cancelSellFrequencyLP = 0.0;
 double uniformCancellationProbability = 0.01;
 
 // Parameters for the liquidity takers : NT and LOT
@@ -252,6 +252,7 @@ int main(int argc, char* argv[])
 			////myMarket->getOrderBook(1)->cleanOrderBook();
 			//else{	
 			//	// Submit order
+			//std::cout << "agent type " << actingAgent->getAgentType() << std::endl;
 				actingAgent->makeAction( actingAgent->getTargetedStock(), currentTime) ;
 			//}	// From time to time, check state of order book
 			if(currentTime>i*printIntervals)

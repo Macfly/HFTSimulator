@@ -16,7 +16,7 @@ class RandomNumberGenerator
 		RandomNumberGenerator()
 		{
 			m_rng=GeneratorType();
-			m_rng.seed(static_cast<unsigned int>(std::time(0)));
+			//m_rng.seed(static_cast<unsigned int>(std::time(0)));
 		};
 		~RandomNumberGenerator(){};
 		GeneratorType& getRNG()
