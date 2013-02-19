@@ -179,7 +179,7 @@ int main(int argc, char* argv[])
 	for(int n=0; n<nInitialOrders; n++)
 	{
 		myLiquidityProvider->makeAction(1, 0.0);
-	//	std::cout<<"nklhikh khk hkl hkl h h klh klh k hk "<<std::endl;
+		//std::cout<<"nklhikh khk hkl hkl h h klh klh k hk "<<std::endl;
 	}
 
 	// Create one Noise Trader

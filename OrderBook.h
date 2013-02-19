@@ -225,6 +225,9 @@ class OrderBook
 		concurrency::concurrent_unordered_map<int, int> bids_quantity;
 		concurrency::concurrent_unordered_map<int, int> asks_quantity;
 
+		long totalAskQuantity;
+		long totalBidQuantity;
+
 		double m_returnsSumSquared;
 
 };
