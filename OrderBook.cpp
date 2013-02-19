@@ -254,7 +254,7 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 			}
 			else if (l_fifoOrder->m_volume > a_order.m_volume)
 			{
-				//m_linkToMarket->notifyPartialExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,a_order.m_volume,l_fifoOrder->m_price);
+				m_linkToMarket->notifyPartialExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,a_order.m_volume,l_fifoOrder->m_price);
 				//m_linkToMarket->notifyExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
 				l_fifoOrder->m_volume -= a_order.m_volume;
 				asks_quantity[l_fifoOrder->m_price] -= a_order.getVolume();
@@ -275,7 +275,7 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 			else if (l_fifoOrder->m_volume < a_order.m_volume)
 			{
 				//m_linkToMarket->notifyExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
-				//m_linkToMarket->notifyPartialExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_volume,l_fifoOrder->m_price);
+				m_linkToMarket->notifyPartialExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_volume,l_fifoOrder->m_price);
 				a_order.m_volume -= l_fifoOrder->m_volume;
 				asks_quantity[l_fifoOrder->m_price] -= l_fifoOrder->m_volume;
 				totalAskQuantity -= l_fifoOrder->m_volume;
@@ -347,7 +347,7 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 			}
 			else if (l_fifoOrder->m_volume > a_order.m_volume)
 			{
-				//m_linkToMarket->notifyPartialExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,a_order.m_volume,l_fifoOrder->m_price);
+				m_linkToMarket->notifyPartialExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,a_order.m_volume,l_fifoOrder->m_price);
 				//m_linkToMarket->notifyExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
 				l_fifoOrder->m_volume -= a_order.m_volume;
 				bids_quantity[l_fifoOrder->m_price] -= a_order.getVolume();
@@ -368,7 +368,7 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 			else if (l_fifoOrder->m_volume < a_order.m_volume)
 			{
 				//m_linkToMarket->notifyExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
-				//m_linkToMarket->notifyPartialExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_volume,l_fifoOrder->m_price);
+				m_linkToMarket->notifyPartialExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_volume,l_fifoOrder->m_price);
 				a_order.m_volume -= l_fifoOrder->m_volume;
 				bids_quantity[l_fifoOrder->m_price] -= l_fifoOrder->m_volume;
 				totalBidQuantity -= l_fifoOrder->m_volume;
@@ -461,8 +461,8 @@ void OrderBook::processSellCancellation(int a_agentIdentifier,int a_orderIdentif
 			m_asks.erase(itPrice);
 		}
 		// notify owner of order
-		/*m_linkToMarket->notifyCancellation(a_agentIdentifier,a_orderIdentifier,a_time) ;
-		m_linkToMarket->updateCurrentTime(a_time);*/
+		m_linkToMarket->notifyCancellation(a_agentIdentifier,a_orderIdentifier,a_time) ;
+		m_linkToMarket->updateCurrentTime(a_time);
 		m_linkToMarket->notifyAllAgents();
 	}
 	// ... else raise error
@@ -508,8 +508,8 @@ void OrderBook::processBuyCancellation(int a_agentIdentifier,int a_orderIdentifi
 			m_bids.erase(itPrice);
 		}
 		// notify owner of order
-		/*m_linkToMarket->notifyCancellation(a_agentIdentifier,a_orderIdentifier,a_time) ;
-		m_linkToMarket->updateCurrentTime(a_time);*/
+		m_linkToMarket->notifyCancellation(a_agentIdentifier,a_orderIdentifier,a_time) ;
+		m_linkToMarket->updateCurrentTime(a_time);
 		m_linkToMarket->notifyAllAgents();
 	}
 	// ... else raise error
