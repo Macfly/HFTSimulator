@@ -56,9 +56,7 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 	//double volatility = pow(variance, 0.5);
 
 	//std::cout<<"vol = "<<volatility<<std::endl;
-	std::cout<<" pd de ta race"<<std::endl;
 	aplotter->plotOrderBook(price,priceQ,0, 0);
-	std::cout<<" encule de ta mere"<<std::endl;
 }
 
 int nbAssets = 1;
@@ -249,7 +247,7 @@ int main(int argc, char* argv[])
 			//}	// From time to time, check state of order book
 			if(currentTime>i*printIntervals)
 			{
-				/*std::cout
+				std::cout
 					<<"time: "<<currentTime << std::endl
 					<< "[bid;ask]=" 
 					<< "[" << myMarket->getOrderBook(1)->getBidPrice()/100.0 << " ; "
@@ -261,15 +259,15 @@ int main(int argc, char* argv[])
 					<< "[pendingLP;pendingNT]="
 					<< "[" << myLiquidityProvider->getPendingOrders()->size()<<";"
 					<< myNoiseTrader->getPendingOrders()->size() << "]"
-					<< std::endl << std::flush;*/
+					<< std::endl << std::flush;
 
 				// Plot order book
 				plotOrderBook(myMarket,plotter,1);
-				//// Agents'portfolios
-				/*std::cout << "LP: nStock=\t" << myLiquidityProvider->getStockQuantity(1) 
+				// Agents'portfolios
+				std::cout << "LP: nStock=\t" << myLiquidityProvider->getStockQuantity(1) 
 					<< "\t Cash=\t" << myLiquidityProvider->getNetCashPosition() << std::endl ;				
 				std::cout << "NT: nStock=\t" << myNoiseTrader->getStockQuantity(1) 
-					<< "\t Cash=\t" << myNoiseTrader->getNetCashPosition() << std::endl<< std::endl<< std::endl ;*/
+					<< "\t Cash=\t" << myNoiseTrader->getNetCashPosition() << std::endl<< std::endl<< std::endl ;
 
 				//int size=myMarket->getOrderBook(1)->getHistoricPrices().size();
 				//for (int k=0;k<size;k++){

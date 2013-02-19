@@ -81,7 +81,9 @@ class OrderBook
 		/*! cancel a specific given order
 		 * 
 		 */
-		void processCancellation(int a_agentIdentifier,int a_orderIdentifier, double a_time) ;
+		void processSellCancellation(int a_agentIdentifier,int a_orderIdentifier, double a_time) ;
+
+		void processBuyCancellation(int a_agentIdentifier,int a_orderIdentifier, double a_time) ;
 
 		/*! \brief processes the order
 		 *

@@ -29,9 +29,8 @@ class Order
 		 */
 		Order(int a_asset , int a_owner , double	a_time , int a_price,
 					int	a_volume , OrderType a_type ,
-					int a_globalOrderIdentifier);
-		Order(double bidToSet, double askToSet, OrderType a_type ,
-				int a_globalOrderIdentifier);
+					int a_globalOrderIdentifier, OrderState state);
+
 		virtual ~Order();
 
 		int getUnderlying() ;
@@ -47,6 +46,9 @@ class Order
 		void setPrice (int a_price) ;
 		void setVolume(int a_volume);
 		void setType(OrderType a_type) ;
+
+		void setState(OrderState state);
+		OrderState getState();
 
 	private:
 		

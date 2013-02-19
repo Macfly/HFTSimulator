@@ -5,8 +5,8 @@ Order::Order()
 {
 }
 Order::Order(int a_asset , int a_owner , double	a_time , int a_price,
-				int	a_volume , OrderType a_type ,
-				int a_globalOrderIdentifier)
+			 int	a_volume , OrderType a_type ,
+			 int a_globalOrderIdentifier, OrderState state)
 {
 	m_asset					= a_asset;
 	m_owner					= a_owner;
@@ -17,16 +17,8 @@ Order::Order(int a_asset , int a_owner , double	a_time , int a_price,
 	m_type					= a_type;
 	m_state					= ALIVE;
 	m_globalOrderIdentifier = a_globalOrderIdentifier;
+	m_state					= state;
 }
-
-Order::Order(double bidToSet, double askToSet, OrderType a_type ,
-				int a_globalOrderIdentifier)
-{
-	m_newAsk				= askToSet;
-	m_newBid				= bidToSet;
-	m_globalOrderIdentifier = a_globalOrderIdentifier;
-}
-
 
 Order::~Order()
 {
@@ -83,5 +75,12 @@ void Order::setType(OrderType a_type)
 {
 	m_type = a_type ;
 }
-
+void Order::setState(OrderState state)
+{
+	m_state = state ;
+}
+OrderState Order::getState()
+{
+	return m_state;
+}
 

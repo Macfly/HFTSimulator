@@ -133,39 +133,40 @@ OrderType LiquidityProvider::getOrderType() const
 void LiquidityProvider::makeAction(int a_OrderBookId, double a_currentTime)
 {
 	OrderType thisOrderType = getOrderType() ;
-		if(thisOrderType == CANCEL_BUY ||thisOrderType == CANCEL_SELL)
+	if(thisOrderType == CANCEL_BUY ||thisOrderType == CANCEL_SELL)
+	{
+		if (a_currentTime == 0.0)// NO Cancellation at the initialisation of the process
 		{
-			if (a_currentTime == 0.0)// NO Cancellation at the initialisation of the process
+			return;
+		}
+		else
+		{
+			if(thisOrderType == CANCEL_BUY)
 			{
+				chooseOrdersToBeCanceled(a_OrderBookId,true,a_currentTime);
 				return;
 			}
 			else
 			{
-				if(thisOrderType == CANCEL_BUY)
-				{
-					chooseOrdersToBeCanceled(a_OrderBookId,true,a_currentTime);
-					return;
-				}
-				else
-				{
-					chooseOrdersToBeCanceled(a_OrderBookId,false,a_currentTime);
-					return;
-				}
+				chooseOrdersToBeCanceled(a_OrderBookId,false,a_currentTime);
+				return;
 			}
 		}
-		int thisOrderVolume = getOrderVolume() ;
-		int thisOrderPrice = getOrderPrice(a_OrderBookId, thisOrderType) ;
-		submitOrder(
-			a_OrderBookId, 
-			a_currentTime,
-			thisOrderVolume,
-			thisOrderType,
-			thisOrderPrice
+	}
+	int thisOrderVolume = getOrderVolume() ;
+	int thisOrderPrice = getOrderPrice(a_OrderBookId, thisOrderType) ;
+	submitOrder(
+		a_OrderBookId, 
+		a_currentTime,
+		thisOrderVolume,
+		thisOrderType,
+		thisOrderPrice
 		);	
 }
 
 void LiquidityProvider::chooseOrdersToBeCanceled(int a_OrderBookId, bool a_buySide, double a_time)
 {
+	mtx_.lock();
 	concurrency::concurrent_unordered_map<int,Order> pendingOrdersCopy(m_pendingOrders) ;
 	concurrency::concurrent_unordered_map<int,Order>::iterator iter = pendingOrdersCopy.begin();
 
@@ -175,11 +176,13 @@ void LiquidityProvider::chooseOrdersToBeCanceled(int a_OrderBookId, bool a_buySi
 		{
 			double cancelAlea = m_cancelDistribution->nextRandom() ;
 			if(cancelAlea<m_cancelProbability){
-				submitCancellation(a_OrderBookId,iter->second.getIdentifier(),a_time) ;
+				OrderType type = a_buySide ? CANCEL_BUY : CANCEL_SELL;
+				submitCancellation(a_OrderBookId,iter->second.getIdentifier(), a_time, type) ;
 			}
 		}
 		iter++ ;
 	}
+	mtx_.unlock();
 }
 void LiquidityProvider::processInformation()
 {

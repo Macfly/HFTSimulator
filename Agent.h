@@ -5,6 +5,7 @@
 #include <vector>
 #include "Types.h"
 #include <concurrent_unordered_map.h>
+#include <boost\thread\mutex.hpp>
 
 class Order;
 class Market;
@@ -159,6 +160,8 @@ class Agent
 		 * 
 		 */
 		concurrency::concurrent_unordered_map<int,Order> * getPendingOrders() ;
+
+		boost::mutex mtx_;
 	
 	protected:
 		int	m_identifier;
@@ -215,7 +218,7 @@ class Agent
 		/*! \brief submits a cancellation demand to the market
 		 *
 		 */
-		void submitCancellation(int a_OrderBookId,int a_orderIdentifier, double a_time);
+		void submitCancellation(int a_OrderBookId,int a_orderIdentifier, double a_time , OrderType type);
 
 };
 
