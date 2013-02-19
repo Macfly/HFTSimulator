@@ -146,9 +146,12 @@ void OrderBook::processLimitBuyOrder(Order & a_order)
 	int bid0 = getBidPrice();
 	if(ask0<=a_order.m_price)
 	{
-		std::cout << "crossing limit order in OrderBook::processLimitBuyOrder. order.price = "<< a_order.m_price << 
-			" ask0 : " << ask0 << " bid0 : " << bid0 << std::endl ;
+		processMarketBuyOrder(a_order);
+	//	std::cout << "crossing limit order in OrderBook::processLimitBuyOrder. order.price = "<< a_order.m_price << 
+		//	" ask0 : " << ask0 << " bid0 : " << bid0 << std::endl ;
 	}
+	else
+	{
 	// If OK, store order
 	m_bids[a_order.m_price].push_back(a_order);
 
@@ -162,6 +165,7 @@ void OrderBook::processLimitBuyOrder(Order & a_order)
 	//		storeOrderBookHistory(a_order.m_time);
 	//	}
 	//}
+	}
 }
 void OrderBook::processLimitSellOrder(Order & a_order)
 {
@@ -170,9 +174,12 @@ void OrderBook::processLimitSellOrder(Order & a_order)
 	int ask0 = getAskPrice() ;
 	if(a_order.m_price<=bid0)
 	{
-		std::cout << "crossing limit order in OrderBook::processLimitSellOrder. order.price = "<< a_order.m_price << 
-			" bid0 : " << bid0 << " ask0 : " << ask0 << std::endl ;
+		processMarketSellOrder(a_order);
+		//std::cout << "crossing limit order in OrderBook::processLimitSellOrder. order.price = "<< a_order.m_price << 
+			//" bid0 : " << bid0 << " ask0 : " << ask0 << std::endl ;
 	}
+	else
+	{
 	// If OK, store order
 	m_asks[a_order.m_price].push_back(a_order);
 	asks_quantity[a_order.m_price] = get_value_map( asks_quantity, a_order.m_price, 0 ) + a_order.getVolume();
@@ -185,6 +192,7 @@ void OrderBook::processLimitSellOrder(Order & a_order)
 	//		storeOrderBookHistory(a_order.m_time);
 	//	}
 	//}
+	}
 }
 void OrderBook::processMarketBuyOrder(Order & a_order)
 {
