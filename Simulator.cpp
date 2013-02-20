@@ -66,9 +66,9 @@ int storedDepth = 1;
 double meanActionTimeLP = 0.5;
 int meanVolumeLP = 100;
 int meanPriceLagLP = 6;
-double buyFrequencyLP = 0.5;
-double cancelBuyFrequencyLP = 0.0;
-double cancelSellFrequencyLP = 0.0;
+double buyFrequencyLP = 0.25;
+double cancelBuyFrequencyLP = 0.25;
+double cancelSellFrequencyLP = 0.25;
 double uniformCancellationProbability = 0.01;
 
 // Parameters for the liquidity takers : NT and LOT
@@ -95,7 +95,7 @@ int meanVolumeFVT = 1 ;
 int fundamentalValueFVT = 10000 ;
 */
 
-int nInitialOrders = 100;
+int nInitialOrders = 300;
 double simulationTimeStart = 0 ;
 double simulationTimeStop = 1000 ;
 double printIntervals = 5; //900 ;
@@ -257,8 +257,8 @@ int main(int argc, char* argv[])
 					+ myMarket->getOrderBook(1)->getTotalAskQuantity() << "]"
 					<< std::endl
 					<< "[pendingLP;pendingNT]="
-					<< "[" << myLiquidityProvider->getPendingOrders()->size()<<";"
-					<< myNoiseTrader->getPendingOrders()->size() << "]"
+					<< "[" << myLiquidityProvider->nbPendingOrder()<<";"
+					<< myNoiseTrader->nbPendingOrder() << "]"
 					<< std::endl << std::flush;
 
 				// Plot order book

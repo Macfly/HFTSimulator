@@ -66,9 +66,7 @@ class OrderBook
 		 *
 		 *  If the price does not exist, it returns 0.
 		 */
-		int getAskQuantityForThisPrice(int a_priceLevel) const;
-
-		int getBidQuantityForThisPrice(int a_priceLevel) const;
+		int getQuantityForThisPrice(int a_priceLevel) const;
 		
 		///*! \brief returns the available quantity up to a given Bid price
 		// */
@@ -217,8 +215,8 @@ class OrderBook
 		
 		concurrency::concurrent_queue<Order> orders;
 		bool open;
-		concurrency::concurrent_unordered_map<int, int> bids_quantity;
-		concurrency::concurrent_unordered_map<int, int> asks_quantity;
+		concurrency::concurrent_unordered_map<int, int> quantity;
+		//concurrency::concurrent_unordered_map<int, int> asks_quantity;
 
 		long totalAskQuantity;
 		long totalBidQuantity;

@@ -162,13 +162,15 @@ class Agent
 		concurrency::concurrent_unordered_map<int,Order> * getPendingOrders() ;
 
 		boost::mutex mtx_;
+
+		int Agent::nbPendingOrder();
 	
 	protected:
 		int	m_identifier;
 		AgentType m_Type ;
 		Market * m_linkToMarket; // DO NOT DELETE, JUST A LINK
 
-		std::map<int,Order> m_passedOrders;
+		concurrency::concurrent_unordered_map<int,Order> m_passedOrders;
 		
 		/*! \brief map of pending orders (i.e. orders which can be cancelled)
 		 * 

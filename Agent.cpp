@@ -38,7 +38,9 @@ void Agent::submitOrder(int a_asset , double a_time ,
 			a_volume ,a_type ,
 			l_orderIdentifier, ALIVE);
 		m_passedOrders[l_orderIdentifier] = l_order;
+		mtx_.lock();
 		m_pendingOrders[l_orderIdentifier] = l_order;
+		mtx_.unlock();
 		m_linkToMarket->pushOrder(l_order);
 	}
 }
@@ -58,8 +60,8 @@ void Agent::notifyExecution(int a_orderIdentifier,double a_time,int a_price)
 
 	// Remove from pending orders list
 	concurrency::concurrent_unordered_map<int,Order>::iterator iter;
+	mtx_.lock();
 	try{
-		mtx_.lock();
 		iter = m_pendingOrders.find(a_orderIdentifier) ;
 		if(iter==m_pendingOrders.end()){
 			std::cout << "a_orderIdentifier not found in Agent::notifyExecution." << std::endl ;
@@ -199,3 +201,7 @@ concurrency::concurrent_unordered_map<int,Order> * Agent::getPendingOrders()
 	return &m_pendingOrders;
 }
 
+ int Agent::nbPendingOrder()
+{
+	return m_pendingOrders.size();
+}

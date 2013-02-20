@@ -169,6 +169,7 @@ void LiquidityProvider::chooseOrdersToBeCanceled(int a_OrderBookId, bool a_buySi
 	mtx_.lock();
 	concurrency::concurrent_unordered_map<int,Order> pendingOrdersCopy(m_pendingOrders) ;
 	concurrency::concurrent_unordered_map<int,Order>::iterator iter = pendingOrdersCopy.begin();
+	mtx_.unlock();
 
 	while(iter!=pendingOrdersCopy.end()){
 		OrderType thisOrderType = iter->second.getType() ;
@@ -182,15 +183,10 @@ void LiquidityProvider::chooseOrdersToBeCanceled(int a_OrderBookId, bool a_buySi
 		}
 		iter++ ;
 	}
-	mtx_.unlock();
 }
 void LiquidityProvider::processInformation()
 {
 	// For exemple, read the market book history and decide to do something within a reaction time
 
-}
-
-void LiquidityProvider::cleanPending(){
-	m_pendingOrders.clear();
 }
 
