@@ -26,37 +26,42 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 {
 	std::vector<int> price;
 	std::vector<int> priceQ;
-//	int last;
+	int last;
 	aMarket->getOrderBook(a_orderBookId)->getOrderBookForPlot(price,priceQ);
-	//last = aMarket->getOrderBook(a_orderBookId)->getPrice();
+	last = aMarket->getOrderBook(a_orderBookId)->getPrice();
 
-	//std::vector<int> historicPrices = aMarket->getOrderBook(a_orderBookId)->getHistoricPrices();
-	//std::vector<double> transactionsTimes = aMarket->getOrderBook(a_orderBookId)->getTransactionsTimes();
+	std::vector<int> historicPrices = aMarket->getOrderBook(a_orderBookId)->getHistoricPrices();
+	std::vector<double> transactionsTimes = aMarket->getOrderBook(a_orderBookId)->getTransactionsTimes();
 
-	//int sizePrices = historicPrices.size();
-	//int sizeTransactionsTimes = transactionsTimes.size();
+	int sizePrices = historicPrices.size();
+	int sizeTransactionsTimes = transactionsTimes.size();
 
-	//std::cout<<sizePrices<<std::endl;
-	//double variance=0;
-	//if (sizePrices>1){
+	std::cout<<sizePrices<<std::endl;
+	for (int k=0;k<sizePrices;k++){
+				//	int a;
+					//std::cout<< aMarket->getOrderBook(1)->getHistoricPrices()[k]<<std::endl;
+					//std::cin>>a;
+				}
+	double variance=0;
+	if (sizePrices>1){
 
-	//	for (int z=0;z<(sizePrices-1);z++){
-	//		//std::cout<<historicPrices[z+1]<<std::endl;
-	//		//std::cout<<historicPrices[z]<<std::endl;
-	//		//int a;
-	//		//std::cin>>a;
-	//		variance +=  pow(double( double( double(historicPrices[z+1])-double(historicPrices[z]))/double(historicPrices[z])),2) ;
-	//	}
-	//}
-	//std::cout<<"Transaction Time = "<<transactionsTimes[sizeTransactionsTimes-1]/100.0<<std::endl;
-	//if (transactionsTimes[sizeTransactionsTimes-1]!=0){
-	//	double annualTime = ((((transactionsTimes[sizeTransactionsTimes-1]/1000.0)/60)/60)/24)/365; 
-	//	variance = aMarket->getOrderBook(a_orderBookId)->getReturnsSumSquared()/annualTime;
-	//}
-	//double volatility = pow(variance, 0.5);
+		for (int z=0;z<(sizePrices-1);z++){
+			//std::cout<<historicPrices[z+1]<<std::endl;
+			//std::cout<<historicPrices[z]<<std::endl;
+			//int a;
+			//std::cin>>a;
+			variance +=  pow(double( double( double(historicPrices[z+1])-double(historicPrices[z]))/double(historicPrices[z])),2) ;
+		}
+	}
+	std::cout<<"Transaction Time = "<<transactionsTimes[sizeTransactionsTimes-1]/100.0<<std::endl;
+	if (transactionsTimes[sizeTransactionsTimes-1]!=0){
+		double annualTime = ((((transactionsTimes[sizeTransactionsTimes-1]/1000.0)/60)/60)/24)/365; 
+		variance = aMarket->getOrderBook(a_orderBookId)->getReturnsSumSquared()/annualTime;
+	}
+	double volatility = pow(variance, 0.5);
 
-	//std::cout<<"vol = "<<volatility<<std::endl;
-	aplotter->plotOrderBook(price,priceQ,0, 0);
+	std::cout<<"vol = "<<volatility<<std::endl;
+	aplotter->plotOrderBook(price,priceQ,last, volatility);
 }
 
 int nbAssets = 1;
@@ -191,6 +196,9 @@ int main(int argc, char* argv[])
 	double currentTime = simulationTimeStart ;
 	int i=1;
 
+	std::string input;
+	std::cin >> input;
+
 	std::cout 
 		<< "Time 0 : [bid ; ask] = " 
 		<< "[" << myMarket->getOrderBook(1)->getBidPrice()/100.0 << " ; "
@@ -200,11 +208,8 @@ int main(int argc, char* argv[])
 		<< myMarket->getOrderBook(1)->getTotalAskQuantity() << "]"
 		<< std::endl ;
 	std::cout << "Order book initialized." << std::endl ;
-	plotOrderBook(myMarket,plotter,1);
 
-	std::string lol;
-	std::cin >> lol;
-
+	std::cin >> input;
 
 	std::vector<double>  MidPriceTimeseries ;
 	try{
@@ -263,13 +268,13 @@ int main(int argc, char* argv[])
 
 				// Plot order book
 				plotOrderBook(myMarket,plotter,1);
-				// Agents'portfolios
+				//// Agents'portfolios
 				std::cout << "LP: nStock=\t" << myLiquidityProvider->getStockQuantity(1) 
 					<< "\t Cash=\t" << myLiquidityProvider->getNetCashPosition() << std::endl ;				
 				std::cout << "NT: nStock=\t" << myNoiseTrader->getStockQuantity(1) 
 					<< "\t Cash=\t" << myNoiseTrader->getNetCashPosition() << std::endl<< std::endl<< std::endl ;
 
-				//int size=myMarket->getOrderBook(1)->getHistoricPrices().size();
+				int size=myMarket->getOrderBook(1)->getHistoricPrices().size();
 				//for (int k=0;k<size;k++){
 				//	int a;
 				//	std::cout<< myMarket->getOrderBook(1)->getHistoricPrices()[k]<<std::endl;
@@ -277,8 +282,6 @@ int main(int argc, char* argv[])
 				//}
 
 				// Update sampling
-
-				//std::cin >> lol;
 
 				i++;
 			}

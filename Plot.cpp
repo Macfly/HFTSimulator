@@ -124,11 +124,11 @@ void Plot::plotOrderBook(	const std::vector<int> & x,
 	fprintf(m_gnuPlot, "set title \"Last Price = %f, Volatility = %f\"\n",  (double)last/100.0, volatility);
 	fprintf(m_gnuPlot, "set zeroaxis\n");
 	//fprintf(m_gnuPlot, "set xtic rotate by 45 font \",7\"");
-	fprintf(m_gnuPlot, "set xtics offset 0,-0.8,0 axis 0.01 rotate by 75\n");
+	fprintf(m_gnuPlot, "set xtics offset -1,-0.8,0 axis 0.01 rotate by 75\n");
 	fprintf(m_gnuPlot, "set xtics front");
 	fprintf(m_gnuPlot, "show xtics\n");
 	
-	fprintf(m_gnuPlot,"plot \"OrderBook.data\"  using 1:($2 < 0? $2 : 1/0 ) lc rgb \"blue\" title \"Bid (Achat)\"with boxes,\'\' using 1:($2 > 0 ? $2 : 1/0 ) lc rgb \"red\"  title \"Ask (Vente)\" with boxes \n");
+	fprintf(m_gnuPlot,"plot \"OrderBook.data\"  using 1:($2 < 0? $2 : 1/0 ) lc rgb \"red\" title \"Bid (Achat)\"with boxes,\'\' using 1:($2 > 0 ? $2 : 1/0 ) lc rgb \"blue\"  title \"Ask (Vente)\" with boxes \n");
 	fflush (m_gnuPlot);
 
 }
