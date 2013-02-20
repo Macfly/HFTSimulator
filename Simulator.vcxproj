@@ -96,6 +96,7 @@
     <ClCompile Include="Agent.cpp" />
     <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="Market.cpp" />
+    <ClCompile Include="MarketMaker.cpp" />
     <ClCompile Include="NewsServer.cpp" />
     <ClCompile Include="Order.cpp" />
     <ClCompile Include="OrderBook.cpp" />
@@ -114,6 +115,7 @@
     <ClInclude Include="ConfigFile.h" />
     <ClInclude Include="Chameleon.h" />
     <ClInclude Include="Market.h" />
+    <ClInclude Include="MarketMaker.h" />
     <ClInclude Include="NewsServer.h" />
     <ClInclude Include="Order.h" />
     <ClInclude Include="OrderBook.h" />

@@ -45,7 +45,8 @@ typedef enum
 	NOISE_TRADER,
 	LARGE_ORDER_TRADER,
 	TREND_FOLLOWER,
-	FUNDAMENTAL_VALUE_TRADER
+	FUNDAMENTAL_VALUE_TRADER,
+	MARKET_MAKER
 } AgentType;
 
 /*! \brief Storage class for execution history of an order

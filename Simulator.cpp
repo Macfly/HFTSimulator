@@ -81,11 +81,11 @@ double meanDeltaTimeMarketOrder = 2.2 ;
 double percentageLargeOrders = 0.01 ;
 
 double meanActionTimeNT = meanDeltaTimeMarketOrder / (1.0-percentageLargeOrders) ;
-int meanVolumeNT = 1000;
+int meanVolumeNT = 100;
 double buyFrequencyNT = 0.5;
 
 //if you use a uniform distribution
-int minVolumeNT=0;
+int minVolumeNT=30;
 int maxVolumeNT=100;
 
 double meanActionTimeLOT = meanDeltaTimeMarketOrder / percentageLargeOrders ;
@@ -132,6 +132,7 @@ void runOrderBook(){
 
 int main(int argc, char* argv[])
 {
+
 	Plot * plotter = new Plot() ;
 	std::ostringstream oss_marketName ;
 	oss_marketName << "LargeTrader_" << percentageLargeOrders ;

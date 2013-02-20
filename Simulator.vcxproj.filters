@@ -58,6 +58,9 @@
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MarketMaker.cpp">
+      <Filter>Source Files\Agents</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Agent.h">
@@ -122,6 +125,9 @@
     </ClInclude>
     <ClInclude Include="Chameleon.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MarketMaker.h">
+      <Filter>Source Files\Agents</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
