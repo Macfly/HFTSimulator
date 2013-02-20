@@ -468,22 +468,55 @@ int OrderBook::getPrice() const
 {
 	return m_last;
 }
-void OrderBook::getOrderBookForPlot(std::vector<int> &a_price,std::vector<int> &a_priceQ) const
+void OrderBook::getOrderBookForPlot(std::vector<int> &a_price,std::vector<int> &a_priceQ, std::vector<int> &MMprices, std::vector<int> &MMvolumes) const
 {
 	
 	std::map< int , std::list < Order > >::const_iterator itBids; 
 	std::map< int , std::list < Order > >::const_iterator itAsks; 
 	
 	std::vector<LimitOrders> l_vector;
+
 	for(itBids = m_bids.begin();itBids != m_bids.end();itBids++)
 	{
 		int l_bid = (*itBids).first;
+
+		std::list<Order> l_order_bid = (*itBids).second;
+		int volume_mm_bid=0;
+
+		for (std::list<Order>::iterator it = l_order_bid.begin() ; it !=l_order_bid.end(); it++){
+		//	std::cout<<"Agent ID : "<<it->getOwner()<<std::endl;
+			if(it->getOwner()==2){
+				volume_mm_bid+=it->getVolume();
+
+			}
+		}
+
+		if (volume_mm_bid!=0){
+			MMprices.push_back(l_bid);
+			MMvolumes.push_back(-1*volume_mm_bid);
+		}
 		a_price.push_back(l_bid);
+
 		a_priceQ.push_back(-1*getQuantityForThisPrice(m_bids,l_bid));
 	}
 	for(itAsks = m_asks.begin();itAsks != m_asks.end();itAsks++)
 	{
 		int l_ask = (*itAsks).first;
+		
+		std::list<Order> l_order_ask = (*itAsks).second;
+		int volume_mm_ask=0;
+		for (std::list<Order>::iterator it = l_order_ask.begin() ; it !=l_order_ask.end(); it++){
+		//	std::cout<<"Agent ID : "<<it->getOwner()<<std::endl;
+			if(it->getOwner()==2){
+				volume_mm_ask+=it->getVolume();
+
+			}
+		}
+
+		if (volume_mm_ask!=0){
+			MMprices.push_back(l_ask);
+			MMvolumes.push_back(volume_mm_ask);
+		}
 		a_price.push_back(l_ask);
 		a_priceQ.push_back(getQuantityForThisPrice(m_asks,l_ask));
 	}
@@ -720,12 +753,63 @@ int OrderBook::getTotalVolumeAtPrice(int a_price) const
 }
 
 void OrderBook::cleanOrderBook(){
-	std::map<int,std::list<Order> >::iterator itPrice ;
+	//std::map<int,std::list<Order> >::iterator itPrice ;
     // Look for order in m_asks
-
-
 	m_asks.clear();
 	m_bids.clear();
+	//std::mao< int , std::list< Order > > copyBid;
+	//std::mao< int , std::list< Order > > copyAsk;
+
+
+	//std::map< int , std::list < Order > >::const_iterator itBids; 
+	//std::map< int , std::list < Order > >::const_iterator itAsks; 
+	//
+	//std::vector<LimitOrders> l_vector;
+
+	//for(itBids = m_bids.begin();itBids != m_bids.end();itBids++)
+	//{
+	//	std::cout<<"iterator 1"<<std::endl;
+	//	int l_bid = (*itBids).first;
+
+	//	std::list<Order> l_order_bid = (*itBids).second;
+	//	int volume_mm_bid=0;
+
+	//	for (std::list<Order>::iterator it = l_order_bid.begin() ; it !=l_order_bid.end(); it++){
+
+	//		std::cout<<"iterator 2 "<<std::endl;
+	//		if(it->getOwner()!=2){
+	//			if(l_order_bid.size() ==1) {
+	//			m_bids.erase(l_bid);
+	//			}else{
+	//			m_bids[l_bid].erase(it);
+	//			}
+	//		}
+	//	}
+	//	
+	//}
+
+	//for(itAsks = m_asks.begin();itAsks != m_asks.end();itAsks++)
+	//{
+	//	int l_ask = (*itAsks).first;
+
+	//	std::list<Order> l_order_ask = (*itAsks).second;
+	//	int volume_mm_ask=0;
+
+	//	for (std::list<Order>::iterator it = l_order_ask.begin() ; it !=l_order_ask.end(); it++){
+	//	//	std::cout<<"Agent ID : "<<it->getOwner()<<std::endl;
+	//		if(it->getOwner()!=2){
+
+	//			m_asks[l_ask].erase(it);
+
+
+	//		}
+	//	}
+
+
+	//	
+	//	
+	//
+
 
 
 }

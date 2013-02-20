@@ -120,7 +120,7 @@ OrderType LiquidityProvider::getOrderType() const
 	}
 	else if(l_orderTypeAlea<m_cancelBuyFrequency + m_cancelSellFrequency + m_buyFrequency)
 	{
-	std::cout << "LIMIT_BUY" << std::endl ;
+	//std::cout << "LIMIT_BUY" << std::endl ;
 		return LIMIT_BUY ;
 	}
 	else
@@ -136,8 +136,7 @@ void LiquidityProvider::makeAction(int a_OrderBookId, double a_currentTime){
 void LiquidityProvider::makeAction(int a_OrderBookId, double a_currentTime, bool init)
 {
 	//m_linkToMarket->getOrderBook(a_OrderBookId)->cleanOrderBook();
-	//std::cout<<"limit order!!!"<<std::endl;
-		//OrderType thisOrderType = getOrderType() ;
+	//OrderType thisOrderType = getOrderType() ;
 		//if(thisOrderType == CANCEL_BUY ||thisOrderType == CANCEL_SELL)
 		//{
 		//	if (a_currentTime == 0.0)// NO Cancellation at the initialisation of the process
@@ -169,6 +168,7 @@ void LiquidityProvider::makeAction(int a_OrderBookId, double a_currentTime, bool
 	//		thisOrderPrice
 	//	);
 	//	std::cout<<"LIMIT order!!!"<<std::endl;
+	//std::cout<<"LIQUIDITY ORDER"<<std::endl;
 
 	int tickSize = m_linkToMarket->getOrderBook(a_OrderBookId)->getTickSize();
 	int i;

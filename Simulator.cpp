@@ -12,6 +12,8 @@
 #include "DistributionConstant.h"
 #include "LiquidityProvider.h"
 #include "NoiseTrader.h"
+#include "MarketMaker.h"
+
 #include "Exceptions.h"
 #include "Plot.h"
 #include "Stats.h"
@@ -24,8 +26,14 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 {
 	std::vector<int> price;
 	std::vector<int> priceQ;
+
+	std::vector<int> pricesMM;
+	std::vector<int> volumesMM;
+
 	int last;
-	aMarket->getOrderBook(a_orderBookId)->getOrderBookForPlot(price,priceQ);
+
+	aMarket->getOrderBook(a_orderBookId)->getOrderBookForPlot(price,priceQ, pricesMM, volumesMM);
+
 	last = aMarket->getOrderBook(a_orderBookId)->getPrice();
 
 	//std::vector<int> historicPrices = aMarket->getOrderBook(a_orderBookId)->getHistoricPrices();
@@ -64,7 +72,7 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 	double volatility = pow(variance, 0.5);
 
 	std::cout<<"vol = "<<volatility<<std::endl;
-	aplotter->plotOrderBook(price,priceQ,last, volatility);
+	aplotter->plotOrderBook(price,priceQ,last, volatility, pricesMM,volumesMM);
 }
 
 int nbAssets = 1;
@@ -105,7 +113,7 @@ int fundamentalValueFVT = 10000 ;
 
 int nInitialOrders = 1 ;
 double simulationTimeStart = 0 ;
-double simulationTimeStop = 288*10 ;
+double simulationTimeStop = 188*10 ;
 double printIntervals = 30; //900 ;
 double impactMeasureLength = 60 ;
 
@@ -129,6 +137,9 @@ double impactMeasureLength = 60 ;
 //}
 int main(int argc, char* argv[])
 {
+	Plot * plotter2 = new Plot() ;
+	std::vector<double> transactionsTimes;
+	std::vector<int> historicPrices ;
 	Plot * plotter = new Plot() ;
 	std::ostringstream oss_marketName ;
 	oss_marketName << "LargeTrader_" << percentageLargeOrders ;
@@ -159,6 +170,27 @@ int main(int argc, char* argv[])
 			uniformCancellationProbability
 	) ;
 	myMarket->registerAgent(myLiquidityProvider);
+	
+	// Create one Market Maker
+	DistributionExponential * MarketOrderActionTimeDistribution = new DistributionExponential(myRNG, meanActionTimeLP) ;
+	//DistributionExponential *  LimitOrderOrderVolumeDistribution = new DistributionExponential(myRNG, meanVolumeLP) ;
+	DistributionGaussian * MarketOrderOrderVolumeDistribution = new DistributionGaussian(myRNG, 0.4*100, sqrt(0.2*100 ));
+	//DistributionConstant * LimitOrderOrderVolumeDistribution = new DistributionConstant(myRNG, meanVolumeLP) ;
+	DistributionExponential * MarketOrderOrderPriceDistribution = new DistributionExponential(myRNG, meanPriceLagLP) ;
+	MarketMaker * myMarketMaker = new MarketMaker
+	(
+			myMarket, 
+			MarketOrderActionTimeDistribution,
+			MarketOrderOrderVolumeDistribution,
+			MarketOrderOrderPriceDistribution,
+			buyFrequencyLP,
+			1,
+			cancelBuyFrequencyLP,
+			cancelSellFrequencyLP,
+			uniformCancellationProbability,
+			0.1
+	) ;
+	myMarket->registerAgent(myMarketMaker);
 
 	// Submit nInitialOrders limit orders to initialize order book
 	for(int n=0; n<nInitialOrders; n++)
@@ -176,6 +208,8 @@ int main(int argc, char* argv[])
 			<< std::endl ;
 	std::cout << "Order book initialized." << std::endl ;
 	plotOrderBook(myMarket,plotter,1);
+	
+	// Plot the process of prices
 
 	// Create one Noise Trader
 	DistributionExponential * NoiseTraderActionTimeDistribution = new DistributionExponential(myRNG, meanActionTimeNT) ;
@@ -203,29 +237,34 @@ int main(int argc, char* argv[])
 			// Get next time of action
 			currentTime += myMarket->getNextActionTime() ;
 			// Select next player
-			Agent * actingAgent = myMarket->getNextActor() ;
-
-		if (myMarket->getNextActor()->getAgentType()==LIQUIDITY_PROVIDER){
-			int oldAskPrice= myMarket->getOrderBook(1)-> getAskPrice();
-			int oldBidPrice= myMarket->getOrderBook(1)->getBidPrice();
-		//	std::cout<<"old bid : "<<oldBidPrice<<" , old ask : "<<oldAskPrice<<std::endl;
-			myMarket->getOrderBook(1)->cleanOrderBook();
-			myLiquidityProvider->cleanPending();
-		//	std::cout<<"clean bid : "<< myMarket->getOrderBook(1)->getBidPrice() <<" , clean ask : "<< myMarket->getOrderBook(1)-> getAskPrice() <<std::endl;
-		//	int a;
-			myMarket->getOrderBook(1)->setDefaultBidAsk(oldBidPrice, oldAskPrice);
-		//	std::cout<<"New bid : "<< myMarket->getOrderBook(1)->getBidPrice() <<" , New ask : "<< myMarket->getOrderBook(1)-> getAskPrice() <<std::endl;
-		//	std::cin >> a;
-			myLiquidityProvider->makeAction( actingAgent->getTargetedStock(), currentTime, true) ;
+			int spread = myMarket->getOrderBook(1)->getAskPrice() - myMarket->getOrderBook(1)->getBidPrice();
+			Agent * actingAgent;
 			
-		}
-				//myMarket->getOrderBook(1)->cleanOrderBook();
-		else{	
-			// Submit order
-			actingAgent->makeAction( actingAgent->getTargetedStock(), currentTime) ;
-		}
+			if (spread >= 2*myMarket->getOrderBook(1)->getTickSize()) {
+				actingAgent = myMarketMaker;
+				actingAgent->makeAction( actingAgent->getTargetedStock(), currentTime) ;			
+			}
 
-	
+			else{
+				actingAgent = myMarket->getNextActor() ;
+			}
+		
+			if (actingAgent->getAgentType()==LIQUIDITY_PROVIDER){
+				int oldAskPrice= myMarket->getOrderBook(1)-> getAskPrice();
+				int oldBidPrice= myMarket->getOrderBook(1)->getBidPrice();
+				myMarket->getOrderBook(1)->cleanOrderBook();
+				myLiquidityProvider->cleanPending();
+				myMarketMaker->cleanPending();
+				myMarket->getOrderBook(1)->setDefaultBidAsk(oldBidPrice, oldAskPrice);
+				myLiquidityProvider->makeAction( actingAgent->getTargetedStock(), currentTime, true);		
+		}
+		else {	
+			// Submit order
+			if (actingAgent->getAgentType()==NOISE_TRADER){
+				actingAgent->makeAction( actingAgent->getTargetedStock(), currentTime) ;
+			}
+		}
+			
 
 		// From time to time, check state of order book
 			if(currentTime>i*printIntervals)
@@ -239,25 +278,23 @@ int main(int argc, char* argv[])
 					<< "[" << myMarket->getOrderBook(1)->getTotalBidQuantity()<<";" <<
 					+ myMarket->getOrderBook(1)->getTotalAskQuantity() << "]"
 					<< std::endl
-					<< "[pendingLP;pendingNT]="
+					<< "[pendingLP ; pendingNT ; pendingMM]="
 					<< "[" << myLiquidityProvider->getPendingOrders()->size()<<";"
-					<< myNoiseTrader->getPendingOrders()->size() << "]"
+					<< myNoiseTrader->getPendingOrders()->size() << ";"
+					<< myMarketMaker->getPendingOrders()->size() << "]"
 					<< std::endl;
 				// Plot order book
+
 				plotOrderBook(myMarket,plotter,1);
+
+
 				// Agents'portfolios
 				std::cout << "LP: nStock=\t" << myLiquidityProvider->getStockQuantity(1) 
 					<< "\t Cash=\t" << myLiquidityProvider->getNetCashPosition() << std::endl ;				
 				std::cout << "NT: nStock=\t" << myNoiseTrader->getStockQuantity(1) 
-					<< "\t Cash=\t" << myNoiseTrader->getNetCashPosition() << std::endl<< std::endl<< std::endl ;
-
-				int size=myMarket->getOrderBook(1)->getHistoricPrices().size();
-				//for (int k=0;k<size;k++){
-				//	int a;
-				//	std::cout<< myMarket->getOrderBook(1)->getHistoricPrices()[k]<<std::endl;
-				//	std::cin>>a;
-				//}
-				
+					<< "\t Cash=\t" << myNoiseTrader->getNetCashPosition() << std::endl;
+				std::cout << "MM: nStock=\t" << myMarketMaker->getStockQuantity(1) 
+					<< "\t Cash=\t" << myMarketMaker->getNetCashPosition() << std::endl<< std::endl<< std::endl ;				
 				// Update sampling
 				
 				i++;
@@ -270,14 +307,35 @@ int main(int argc, char* argv[])
 	{
 		std::cout <<e.what()<< std::endl ;
 	}
-	// Plot the process of prices
-		std::vector<int> historicPrices = myMarket->getOrderBook(1)->getHistoricPrices();
-		std::vector<double> transactionsTimes = myMarket->getOrderBook(1)->getTransactionsTimes();
-		Plot * plotter2 = new Plot() ;
-		plotter2->plotPrices(transactionsTimes,historicPrices);
-		std::cout<<"passé!!!" << std::endl;
+	int nbLPStocks = myLiquidityProvider->getStockQuantity(1);
+	int nbMMStocks = myMarketMaker->getStockQuantity(1);
+	int cashLP =  myLiquidityProvider->getNetCashPosition();
+	int cashMM =  myMarketMaker->getNetCashPosition();
+	if (nbLPStocks>0){
+		cashLP += nbLPStocks * myMarket->getOrderBook(1)->getAskPrice();
+	}
+	else if (nbLPStocks<0){
+		cashLP += nbLPStocks * myMarket->getOrderBook(1)->getBidPrice();
+	}
+	if (nbMMStocks>0){
+		cashMM += nbMMStocks * myMarket->getOrderBook(1)->getAskPrice();
+	}
+	else if (nbMMStocks<0){
+		cashMM += nbMMStocks * myMarket->getOrderBook(1)->getBidPrice();
+	}
+	std::cout<<"CASH POSITIONS : "<<std::endl;
+	std::cout << "LP: CASH =\t" << cashLP/100.0<<std::endl;
+	std::cout << "MM: CASH =\t" << cashMM/100.0<<std::endl;
+	std::cout << "NT: CASH =\t" << myNoiseTrader->getNetCashPosition()/100.0 <<std::endl;
+	
+	historicPrices = myMarket->getOrderBook(1)->getHistoricPrices();
+	transactionsTimes = myMarket->getOrderBook(1)->getTransactionsTimes();
+	plotter2->plotPrices(transactionsTimes,historicPrices);
+	std::cout<<"passé!!!" << std::endl;
+	
 		int a;
 		std::cin>>a;
+	
 	// Print stored history
 	// myMarket->getOrderBook(1)->printStoredOrderBookHistory();
 	

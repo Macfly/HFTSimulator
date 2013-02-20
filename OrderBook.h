@@ -118,7 +118,7 @@ class OrderBook
 		/*! \brief prepares data to be plotted in Gnuplot
 		 *
 		 */
-		void getOrderBookForPlot(std::vector<int> &a_price,std::vector<int> &a_priceQ) const;
+		void getOrderBookForPlot(std::vector<int> &a_price,std::vector<int> &a_priceQ, std::vector<int> &MMprices, std::vector<int> &MMvolumes) const;
 
 		/*! \brief returns the bid Queue
 		 *

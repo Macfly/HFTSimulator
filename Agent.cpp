@@ -29,6 +29,7 @@ void Agent::setIdentifier(int a_identifier)
 {
 	m_identifier = a_identifier;	
 }
+
 void Agent::submitOrder(int a_asset , double a_time ,
 				int	a_volume , OrderType a_type, int a_price )
 {
