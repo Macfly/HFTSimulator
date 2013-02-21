@@ -169,6 +169,38 @@ void LiquidityProvider::makeAction(int a_OrderBookId, double a_currentTime)
 		);	
 }
 
+void LiquidityProvider::makeSellAction(int a_OrderBookId, double a_currentTime)
+{
+
+	OrderType thisOrderType = LIMIT_SELL;
+	int thisOrderPrice = getOrderPrice(a_OrderBookId, thisOrderType) ;
+
+	int thisOrderVolume = getOrderVolume(thisOrderPrice, a_OrderBookId, thisOrderType);
+	submitOrder(
+		a_OrderBookId, 
+		a_currentTime,
+		thisOrderVolume,
+		thisOrderType,
+		thisOrderPrice
+		);	
+}
+
+void LiquidityProvider::makeBuyAction(int a_OrderBookId, double a_currentTime)
+{
+
+	OrderType thisOrderType = LIMIT_BUY;
+	int thisOrderPrice = getOrderPrice(a_OrderBookId, thisOrderType) ;
+
+	int thisOrderVolume = getOrderVolume(thisOrderPrice, a_OrderBookId, thisOrderType);
+	submitOrder(
+		a_OrderBookId, 
+		a_currentTime,
+		thisOrderVolume,
+		thisOrderType,
+		thisOrderPrice
+		);	
+}
+
 void LiquidityProvider::chooseOrdersToBeCanceled(int a_OrderBookId, bool a_buySide, double a_time)
 {
 	mtx_.lock();

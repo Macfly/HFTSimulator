@@ -86,8 +86,8 @@ int meanVolumeNT = 100;
 double buyFrequencyNT = 0.5;
 
 //if you use a uniform distribution
-int minVolumeNT=0;
-int maxVolumeNT=100;
+int minVolumeNT=100;
+int maxVolumeNT=300;
 
 double meanActionTimeLOT = meanDeltaTimeMarketOrder / percentageLargeOrders ;
 int meanVolumeLOT = 1000;
@@ -99,24 +99,6 @@ double simulationTimeStop = 1000 ;
 double printIntervals = 5; //900 ;
 double impactMeasureLength = 60 ;
 
-//int main()
-//{
-//	
-//	std::ofstream outFile("zzzzz.csv");
-//	RandomNumberGenerator *rng=new RandomNumberGenerator();
-//	DistributionUniform * unif=new DistributionUniform(rng);
-//	DistributionGaussian *normal = new DistributionGaussian(rng);
-//	DistributionExponential *expd = new DistributionExponential(rng,0.2);
-//	for(int i=0;i<1000;i++)
-//	{
-//		//std::cout<<expd->nextRandom()<<std::endl;
-//		outFile<<expd->nextRandom()<<'\n';
-//	}
-//	outFile.close();
-//	int a=2;
-//	//std::cin>>a;
-//
-//}
 Market *myMarket;
 
 void runOrderBook(){
@@ -247,8 +229,7 @@ int main(int argc, char* argv[])
 				myMarketMaker->makeAction( myMarketMaker->getTargetedStock(), currentTime) ;			
 			}else if(myMarket->getOrderBook(1)->getTotalAskQuantity() < 2000 || myMarket->getOrderBook(1)->getTotalBidQuantity() < 2000){
 				myLiquidityProvider->makeAction( myLiquidityProvider->getTargetedStock(), currentTime);
-			}
-			else{
+			}else{
 				actingAgent = myMarket->getNextActor() ;
 				actingAgent->makeAction( actingAgent->getTargetedStock(), currentTime);
 			}

@@ -63,6 +63,10 @@ class LiquidityProvider : public Agent {
 
 		void printPending();
 
+		void makeBuyAction(int a_OrderBookId, double a_currentTime);
+
+		void makeSellAction(int a_OrderBookId, double a_currentTime);
+
 
 
 	protected:

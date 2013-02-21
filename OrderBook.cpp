@@ -102,6 +102,18 @@ void OrderBook::runOrderBook()
 	Order orderToExecute;
 	while(open){
 		if(orders.try_pop(orderToExecute)){
+
+			if(orderToExecute.getPrice() < 0 || orderToExecute.getPrice() > 20000){
+
+				std::cout << "bug" << std::endl;
+
+				std::cout << orderToExecute.getOwner() << std::endl;
+
+
+				std::string lol;
+				std::cin>>lol;
+			}
+
 			switch(orderToExecute.m_type)
 			{
 			case LIMIT_SELL:
@@ -387,15 +399,15 @@ int OrderBook::getQuantityForThisPrice(int a_priceLevel) const
 {
 	return get_value_map( quantity, a_priceLevel, 0 );
 }
-
-std::map< int , std::list < Order > > OrderBook::getBidQueue() const
-{
-	return m_bids;
-}
-std::map< int , std::list < Order > > OrderBook::getAskQueue() const
-{
-	return m_asks;
-}
+//
+//std::map< int , std::list < Order > > OrderBook::getBidQueue() const
+//{
+//	return m_bids;
+//}
+//std::map< int , std::list < Order > > OrderBook::getAskQueue() const
+//{
+//	return m_asks;
+//}
 
 void OrderBook::processSellCancellation(int a_agentIdentifier,int a_orderIdentifier, double a_time)
 {
