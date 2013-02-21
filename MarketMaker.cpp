@@ -51,11 +51,10 @@ int MarketMaker::getOrderVolume(double price, int a_OrderBookId, OrderType order
 		int volumeBid = m_linkToMarket->getOrderBook(a_OrderBookId)->getBidQuantity();
 		return std::max(int(m_VolumeProportion * volumeBid),5);		
 	}
-	else {
+	else{
 		int volumeAsk = m_linkToMarket->getOrderBook(a_OrderBookId)->getAskQuantity();
 		return std::max(int(m_VolumeProportion * volumeAsk),5);
 	}
-
 }
 
 int MarketMaker::getOrderPrice(int a_OrderBookId, OrderType a_OrderType) const

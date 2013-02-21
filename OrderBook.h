@@ -129,7 +129,7 @@ class OrderBook
 		/*! \brief prepares data to be plotted in Gnuplot
 		 *
 		 */
-		void OrderBook::getOrderBookForPlot(std::vector<int> &a_price, std::vector<int> &a_priceQ);
+		void OrderBook::getOrderBookForPlot(std::vector<int> &a_price, std::vector<int> &a_priceQ, std::vector<int> &a_priceMM, std::vector<int> &a_priceQMM);
 
 		/*! \brief returns the bid Queue
 		 *
@@ -224,6 +224,8 @@ class OrderBook
 		concurrency::concurrent_queue<Order> orders;
 		bool open;
 		concurrency::concurrent_unordered_map<int, int> quantity;
+		// A map of map containing all prices and volumes for each agent. The first key is the agent ID and the second the price.
+		concurrency::concurrent_unordered_map<int, concurrency::concurrent_unordered_map<int, int>> agentsOrders;
 		//concurrency::concurrent_unordered_map<int, int> asks_quantity;
 
 		long totalAskQuantity;

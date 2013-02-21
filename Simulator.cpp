@@ -27,8 +27,10 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 {
 	std::vector<int> price;
 	std::vector<int> priceQ;
+	std::vector<int> priceMM;
+	std::vector<int> priceQMM;
 	int last;
-	aMarket->getOrderBook(a_orderBookId)->getOrderBookForPlot(price,priceQ);
+	aMarket->getOrderBook(a_orderBookId)->getOrderBookForPlot(price,priceQ,priceMM,priceQMM);
 	last = aMarket->getOrderBook(a_orderBookId)->getPrice();
 
 	concurrency::concurrent_vector<int> historicPrices = aMarket->getOrderBook(a_orderBookId)->getHistoricPrices();
@@ -62,7 +64,7 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 	double volatility = pow(variance, 0.5);
 
 	std::cout<<"vol = "<<volatility<<std::endl;
-	aplotter->plotOrderBook(price,priceQ,last, volatility);
+	aplotter->plotOrderBook(price,priceQ,last, volatility, priceMM, priceQMM);
 }
 
 int nbAssets = 1;
@@ -233,7 +235,6 @@ int main(int argc, char* argv[])
 				actingAgent = myMarket->getNextActor() ;
 				actingAgent->makeAction( actingAgent->getTargetedStock(), currentTime);
 			}
-
 			if(currentTime>i*printIntervals)
 			{
 				std::cout

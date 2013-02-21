@@ -64,17 +64,20 @@ void Plot::plotPrices( const concurrency::concurrent_vector<double> & x, const c
 	//! on lance la commande plot
 	fflush (m_gnuPlot);
 	//fprintf(m_gnuPlot, "set style fill solid 2.0 \n");
+	fprintf(m_gnuPlot, "set xr [*:*]\n");
+	fprintf(m_gnuPlot, "set yr [*:*]\n");	
 	fprintf(m_gnuPlot, "set title \"History of Prices \"\n");
 	fprintf(m_gnuPlot,"plot \"Prices.data\" using 1:2 with lines \n");
 	fflush (m_gnuPlot);
 }
 //-----------------------------------------------------------------------------
-void Plot::plotOrderBook(	const std::vector<int> & x, 
-				   const std::vector<int> & y,int last, double volatility)
+void Plot::plotOrderBook(const std::vector<int> & x, 
+				   const std::vector<int> & y,int last, double volatility, std::vector<int> & MMprices, std::vector<int> & MMvolumes)
 {
 	std::ofstream outFile("OrderBook.data");
+	std::ofstream outFileMM("MMdata.data");
+
 	int index(0);
-	//outFile<<pold/100.0<<'\t'<<y[std::max(index-20,0)]<<'\n';
 	std::vector<int> x2;
 	std::vector<int> y2;
 	x2.push_back(x[0]);
@@ -112,6 +115,12 @@ void Plot::plotOrderBook(	const std::vector<int> & x,
 
 	outFile.close();
 
+	//Market maker
+	for(unsigned int k=0;k<MMprices.size();k++){
+		outFileMM << MMprices[k]/100.0 <<'\t'<< MMvolumes[k]<<'\n';
+	}
+	outFileMM.close();
+	
 	//! on lance la commande plot
 	fflush (m_gnuPlot);
 	fprintf(m_gnuPlot, "set boxwidth 0.7 relative\n");
@@ -119,7 +128,7 @@ void Plot::plotOrderBook(	const std::vector<int> & x,
 	fprintf(m_gnuPlot, "set grid no ytics\n");
 	fprintf(m_gnuPlot, "set tic front\n");
 	fprintf(m_gnuPlot, "set xr [99.7:100.3]\n");
-	fprintf(m_gnuPlot, "set yr [-1500:1500]\n");	
+	fprintf(m_gnuPlot, "set yr [*:*]\n");	
 	fprintf(m_gnuPlot, "set style fill solid 2.0 \n");
 	fprintf(m_gnuPlot, "set title \"Last Price = %f, Volatility = %f\"\n",  (double)last/100.0, volatility);
 	fprintf(m_gnuPlot, "set zeroaxis\n");
@@ -128,7 +137,9 @@ void Plot::plotOrderBook(	const std::vector<int> & x,
 	fprintf(m_gnuPlot, "set xtics front");
 	fprintf(m_gnuPlot, "show xtics\n");
 	
-	fprintf(m_gnuPlot,"plot \"OrderBook.data\"  using 1:($2 < 0? $2 : 1/0 ) lc rgb \"red\" title \"Bid (Achat)\"with boxes,\'\' using 1:($2 > 0 ? $2 : 1/0 ) lc rgb \"blue\"  title \"Ask (Vente)\" with boxes \n");
+	fprintf(m_gnuPlot,"plot \"OrderBook.data\"  using 1:($2 < 0? $2 : 1/0 ) lc rgb \"blue\" title \"Bid (Achat)\"with boxes,\'\' using 1:($2 > 0 ? $2 : 1/0 ) lc rgb \"red\"  title \"Ask (Vente)\" with boxes , \ \"MMdata.data\" using 1:2 lc rgb \"green\" with boxes \n");
+
+	//fprintf(m_gnuPlot,"plot \"OrderBook.data\"  using 1:($2 < 0? $2 : 1/0 ) lc rgb \"red\" title \"Bid (Achat)\"with boxes,\'\' using 1:($2 > 0 ? $2 : 1/0 ) lc rgb \"blue\"  title \"Ask (Vente)\" with boxes \n");
 	fflush (m_gnuPlot);
 
 }
