@@ -20,6 +20,7 @@
 #include <boost\thread.hpp>
 #include "MarketMaker.h"
 
+extern bool USE_PRIORITY = true;
 
 //int nbAssets = cf.Value("mainParameters","nbAssets");
 
@@ -98,8 +99,10 @@ double buyFrequencyLOT = 0.5;
 int nInitialOrders = 300;
 double simulationTimeStart = 0 ;
 double simulationTimeStop = 1000 ;
-double printIntervals = 5; //900 ;
+double printIntervals = 10; //900 ;
 double impactMeasureLength = 60 ;
+
+bool activateHFTPriority = false;
 
 Market *myMarket;
 
@@ -121,6 +124,7 @@ int main(int argc, char* argv[])
 
 	myMarket->getOrderBook(1)->setStoreOrderBookHistory(true,storedDepth);
 	myMarket->getOrderBook(1)->setStoreOrderHistory(true);
+	myMarket->getOrderBook(1)->activateHFTPriority(activateHFTPriority);
 	//myMarket->getOrderBook(1)->setPrintOrderBookHistory(true,storedDepth);
 	RandomNumberGenerator * myRNG = new RandomNumberGenerator();
 
@@ -180,7 +184,7 @@ int main(int argc, char* argv[])
 	DistributionExponential * MarketOrderOrderPriceDistribution = new DistributionExponential(myRNG, meanPriceLagLP) ;
 	MarketMaker * myMarketMaker = new MarketMaker
 		(
-		myMarket, 
+		myMarket,
 		MarketOrderActionTimeDistribution,
 		MarketOrderOrderVolumeDistribution,
 		MarketOrderOrderPriceDistribution,
@@ -189,7 +193,8 @@ int main(int argc, char* argv[])
 		cancelBuyFrequencyLP,
 		cancelSellFrequencyLP,
 		uniformCancellationProbability,
-		0.1
+		0.1,
+		activateHFTPriority
 		) ;
 	myMarket->registerAgent(myMarketMaker);
 

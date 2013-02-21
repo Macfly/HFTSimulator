@@ -8,8 +8,10 @@
 #include <concurrent_queue.h>
 #include <concurrent_unordered_map.h>
 #include <concurrent_vector.h>
+#include <concurrent_priority_queue.h>
 
 #include "Order.h"
+#include "OrderPriority.h"
 
 //class Order;
 class Market;
@@ -173,6 +175,8 @@ class OrderBook
 		void OrderBook::closeOrderBook();
 
 		void quickSort(std::vector<int> &price, std::vector<int> &quantity, int left, int right);
+
+		void activateHFTPriority(bool activate);
 		
 	private:
 		void printOrderBookHistoryOnTheFly(double a_time);
@@ -221,7 +225,7 @@ class OrderBook
 		concurrency::concurrent_vector <double> m_transactionsTimes;
 
 		
-		concurrency::concurrent_queue<Order> orders;
+		concurrency::concurrent_priority_queue <Order, OrderPriority> orders;
 		bool open;
 		concurrency::concurrent_unordered_map<int, int> quantity;
 		// A map of map containing all prices and volumes for each agent. The first key is the agent ID and the second the price.
@@ -232,6 +236,8 @@ class OrderBook
 		long totalBidQuantity;
 
 		double m_returnsSumSquared;
+
+		bool m_activateHFTPriority;
 
 };
 template <typename K, typename V>

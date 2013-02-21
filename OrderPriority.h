@@ -4,7 +4,7 @@ class OrderPriority
 {
 public:
 
-	bool operator()(const Order& u, const Order& v) const {
+	bool operator()(Order& u, Order& v) {
 		return u.getPriority() > v.getPriority();
 	}
 };

@@ -50,6 +50,9 @@ class Order
 		void setState(OrderState state);
 		OrderState getState();
 
+		int getPriority();
+		void setPriority(int priority);
+
 	private:
 		
 		int				m_asset;
@@ -64,6 +67,8 @@ class Order
 
 		double			m_newBid;
 		double			m_newAsk;
+
+		int				m_priority;
 
 		std::vector < ExecutionHistory> m_executionHistory;
 

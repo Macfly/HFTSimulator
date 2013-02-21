@@ -118,6 +118,7 @@
     <ClInclude Include="NewsServer.h" />
     <ClInclude Include="Order.h" />
     <ClInclude Include="OrderBook.h" />
+    <ClInclude Include="OrderPriority.h" />
     <ClInclude Include="Stats.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Distribution.h" />
@@ -131,6 +132,9 @@
     <ClInclude Include="LiquidityProvider.h" />
     <ClInclude Include="NoiseTrader.h" />
     <ClInclude Include="Plot.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

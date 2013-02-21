@@ -17,7 +17,8 @@ MarketMaker::MarketMaker(
 	double a_cancelBuyFrequency,
 	double a_cancelSellFrequency,
 	double a_cancelProbability,
-	double a_volumeProportion
+	double a_volumeProportion,
+	bool activateHFTPriority
 	):Agent(a_market,MARKET_MAKER, a_favouriteStockIdentifier)
 {
 	m_ActionTimeDistribution = a_ActionTimeDistribution ;
@@ -31,6 +32,7 @@ MarketMaker::MarketMaker(
 	m_cancelProbability = a_cancelProbability ;
 	m_cancelDistribution = new DistributionUniform(a_market->getRNG()) ;
 	m_VolumeProportion = a_volumeProportion;
+	m_activateHFTPriority = activateHFTPriority;
 }
 MarketMaker::~MarketMaker() 
 {
@@ -138,18 +140,24 @@ void MarketMaker::makeAction(int a_OrderBookId, double a_currentTime)
 		int thisOrderPrice = getOrderPrice(a_OrderBookId, thisOrderType) ;
 		int thisOrderVolume = getOrderVolume(thisOrderPrice, a_OrderBookId, thisOrderType) ;
 		int tickSize = m_linkToMarket->getOrderBook(a_OrderBookId)->getTickSize();
+		
+		int priority = m_activateHFTPriority ? 10 : 0;
+
+
 		submitOrder(
 			a_OrderBookId, a_currentTime,
 			thisOrderVolume,
 			thisOrderType,
-			thisOrderPrice
+			thisOrderPrice,
+			priority
 			);
 		if (thisOrderType==LIMIT_BUY){
 			submitOrder(
 				a_OrderBookId, a_currentTime,
 				thisOrderVolume,
 				LIMIT_SELL,
-				thisOrderPrice+tickSize
+				thisOrderPrice+tickSize,
+				priority
 				);
 		}
 		else if(thisOrderType==LIMIT_SELL){
@@ -157,7 +165,8 @@ void MarketMaker::makeAction(int a_OrderBookId, double a_currentTime)
 				a_OrderBookId, a_currentTime,
 				thisOrderVolume,
 				LIMIT_BUY,
-				thisOrderPrice-tickSize
+				thisOrderPrice-tickSize,
+				priority
 				);
 		}		
 	}

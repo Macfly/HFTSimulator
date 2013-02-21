@@ -28,10 +28,14 @@ OrderBook::OrderBook(Market *a_market, int a_identifier, int a_tickSize, int a_d
 	m_transactionsTimes.push_back(0);
 	totalAskQuantity = 0;
 	totalBidQuantity = 0;
+	m_activateHFTPriority = false;
 }
 OrderBook::~OrderBook()
 {
 
+}
+void OrderBook::activateHFTPriority(bool activate){
+	m_activateHFTPriority = activate;
 }
 Market * OrderBook::getLinkToMarket()
 {
@@ -155,7 +159,11 @@ void OrderBook::processLimitBuyOrder(Order & a_order)
 	else
 	{
 		// If OK, store order
-		m_bids[a_order.m_price].push_back(a_order);
+		if(a_order.getOwner() == 3 && m_activateHFTPriority){
+			m_bids[a_order.m_price].push_front(a_order);
+		}else{
+			m_bids[a_order.m_price].push_back(a_order);
+		}
 		quantity[a_order.m_price] = get_value_map( quantity, a_order.m_price, 0 ) + a_order.getVolume();
 		int idAgent = a_order.getOwner();
 		agentsOrders[idAgent][a_order.m_price] = get_value_map( agentsOrders[idAgent], a_order.m_price, 0 ) + a_order.getVolume();
@@ -185,7 +193,11 @@ void OrderBook::processLimitSellOrder(Order & a_order)
 	else
 	{
 		// If OK, store order
-		m_asks[a_order.m_price].push_back(a_order);
+		if(a_order.getOwner() == 3 && m_activateHFTPriority){
+			m_asks[a_order.m_price].push_front(a_order);
+		}else{
+			m_asks[a_order.m_price].push_back(a_order);
+		}
 		quantity[a_order.m_price] = get_value_map( quantity, a_order.m_price, 0 ) + a_order.getVolume();
 		int idAgent = a_order.getOwner();
 		agentsOrders[idAgent][a_order.m_price] = get_value_map( agentsOrders[idAgent], a_order.m_price, 0 ) + a_order.getVolume();
@@ -240,11 +252,11 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 				m_linkToMarket->notifyExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
 				l_fifoOrder->m_volume -= a_order.m_volume;
 				quantity[l_fifoOrder->m_price] -= a_order.getVolume();
-			//	std::cout << "volume agent 1: " <<agentsOrders[idAgent][l_fifoOrder->m_price] << std::endl;
+				//	std::cout << "volume agent 1: " <<agentsOrders[idAgent][l_fifoOrder->m_price] << std::endl;
 
 				agentsOrders[l_fifoOrder->getOwner()][l_fifoOrder->m_price] -= a_order.getVolume();
-			//	std::cout << "volume agent : " <<agentsOrders[idAgent][l_fifoOrder->m_price] << std::endl;
-			//	std::cout << "volume : " << a_order.getVolume() << std::endl;
+				//	std::cout << "volume agent : " <<agentsOrders[idAgent][l_fifoOrder->m_price] << std::endl;
+				//	std::cout << "volume : " << a_order.getVolume() << std::endl;
 
 				totalAskQuantity -= a_order.getVolume();
 				a_order.m_volume = 0;
@@ -339,8 +351,8 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 			{
 				m_linkToMarket->notifyPartialExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,a_order.m_volume,l_fifoOrder->m_price);
 				m_linkToMarket->notifyExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
-							
-		std::cout << "LOL :" << l_fifoOrder->m_volume << std::endl;
+
+				std::cout << "LOL :" << l_fifoOrder->m_volume << std::endl;
 
 				l_fifoOrder->m_volume -= a_order.m_volume;
 				quantity[l_fifoOrder->m_price] -= a_order.getVolume();
@@ -607,7 +619,7 @@ void OrderBook::getOrderBookForPlot(std::vector<int> &a_price, std::vector<int> 
 		quickSort(a_priceMM, a_priceQMM, 0, a_priceMM.size()-1);
 	}
 	/*for(int i = 0; i < a_priceMM.size();i++){
-		std::cout<<"sorted       p: " << a_priceMM[i] << " q: " << a_priceQMM[i] << std::endl;
+	std::cout<<"sorted       p: " << a_priceMM[i] << " q: " << a_priceQMM[i] << std::endl;
 	}*/
 }
 

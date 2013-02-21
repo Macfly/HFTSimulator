@@ -28,7 +28,8 @@ public:
 		double a_cancelBuyFrequency,
 		double a_cancelSellFrequency,
 		double a_cancelProbability,
-		double a_volumeProportion
+		double a_volumeProportion,
+		bool activateHFTPriority
 		) ;
 	virtual ~MarketMaker() ;
 
@@ -107,4 +108,6 @@ private:
 	DistributionUniform * m_OrderTypeDistribution ;
 
 	double m_VolumeProportion;
+
+	bool m_activateHFTPriority;
 };

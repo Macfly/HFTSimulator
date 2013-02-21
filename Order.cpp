@@ -18,6 +18,7 @@ Order::Order(int a_asset , int a_owner , double	a_time , int a_price,
 	m_state					= ALIVE;
 	m_globalOrderIdentifier = a_globalOrderIdentifier;
 	m_state					= state;
+	m_priority				= 0;
 }
 
 Order::~Order()
@@ -83,4 +84,9 @@ OrderState Order::getState()
 {
 	return m_state;
 }
-
+int Order::getPriority(){
+	return m_priority;
+}
+void Order::setPriority(int priority){
+	m_priority = priority;
+}

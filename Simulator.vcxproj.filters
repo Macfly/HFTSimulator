@@ -126,5 +126,11 @@
     <ClInclude Include="MarketMaker.h">
       <Filter>Source Files\Agents</Filter>
     </ClInclude>
+    <ClInclude Include="OrderPriority.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>
