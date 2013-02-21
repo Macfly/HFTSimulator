@@ -8,17 +8,17 @@
 #include <iostream>
 
 MarketMaker::MarketMaker(
-		Market * a_market, 
-		Distribution * a_ActionTimeDistribution,
-		Distribution * a_OrderVolumeDistribution,
-		Distribution * a_OrderPriceDistribution,
-		double a_buyFrequency,
-		int a_favouriteStockIdentifier,
-		double a_cancelBuyFrequency,
-		double a_cancelSellFrequency,
-		double a_cancelProbability,
-		double a_volumeProportion
-		):Agent(a_market,MARKET_MAKER, a_favouriteStockIdentifier)
+	Market * a_market, 
+	Distribution * a_ActionTimeDistribution,
+	Distribution * a_OrderVolumeDistribution,
+	Distribution * a_OrderPriceDistribution,
+	double a_buyFrequency,
+	int a_favouriteStockIdentifier,
+	double a_cancelBuyFrequency,
+	double a_cancelSellFrequency,
+	double a_cancelProbability,
+	double a_volumeProportion
+	):Agent(a_market,MARKET_MAKER, a_favouriteStockIdentifier)
 {
 	m_ActionTimeDistribution = a_ActionTimeDistribution ;
 	m_OrderVolumeDistribution = a_OrderVolumeDistribution ;
@@ -65,21 +65,21 @@ int MarketMaker::getOrderPrice(int a_OrderBookId, OrderType a_OrderType) const
 	int tickSize = m_linkToMarket->getOrderBook(a_OrderBookId)->getTickSize() ;
 	//int spread = m_linkToMarket->getOrderBook(a_OrderBookId)->getAskPrice() - m_linkToMarket->getOrderBook(a_OrderBookId)->getBidPrice();
 	//if(spread >= 2 *  m_linkToMarket->getOrderBook(a_OrderBookId)->getTickSize()){
-		if(a_OrderType==LIMIT_BUY)
-		{
-			int currentPrice = m_linkToMarket->getOrderBook(a_OrderBookId)->getBidPrice() ;
-			price = currentPrice + tickSize ;
-		}
-		else if(a_OrderType==LIMIT_SELL)
-		{
-			int currentPrice = m_linkToMarket->getOrderBook(a_OrderBookId)->getAskPrice() ;
-			price = currentPrice - tickSize ;
-		}
-		else
-		{
-			// GESTION DES ERREURS ET EXCEPTIONS	
-		}
-//	}
+	if(a_OrderType==LIMIT_BUY)
+	{
+		int currentPrice = m_linkToMarket->getOrderBook(a_OrderBookId)->getBidPrice() ;
+		price = currentPrice + tickSize ;
+	}
+	else if(a_OrderType==LIMIT_SELL)
+	{
+		int currentPrice = m_linkToMarket->getOrderBook(a_OrderBookId)->getAskPrice() ;
+		price = currentPrice - tickSize ;
+	}
+	else
+	{
+		// GESTION DES ERREURS ET EXCEPTIONS	
+	}
+	//	}
 	return price ;
 }
 OrderType MarketMaker::getOrderType() const
@@ -87,22 +87,22 @@ OrderType MarketMaker::getOrderType() const
 	double l_orderTypeAlea = m_OrderTypeDistribution->nextRandom();
 	if(l_orderTypeAlea<m_cancelBuyFrequency)
 	{
-//		std::cout << "CANCEL_BUY" << std::endl ;
+		//		std::cout << "CANCEL_BUY" << std::endl ;
 		return CANCEL_BUY;
 	}
 	else if(l_orderTypeAlea<m_cancelBuyFrequency + m_cancelSellFrequency)
 	{
-//		std::cout << "CANCEL_SELL" << std::endl ;
+		//		std::cout << "CANCEL_SELL" << std::endl ;
 		return CANCEL_SELL;
 	}
 	else if(l_orderTypeAlea<m_cancelBuyFrequency + m_cancelSellFrequency + m_buyFrequency)
 	{
-	//std::cout << "LIMIT_BUY" << std::endl ;
+		//std::cout << "LIMIT_BUY" << std::endl ;
 		return LIMIT_BUY ;
 	}
 	else
 	{
-//		std::cout << "LIMIT_SELL " << std::endl ;
+		//		std::cout << "LIMIT_SELL " << std::endl ;
 		return LIMIT_SELL ;
 	}
 }
@@ -110,61 +110,58 @@ OrderType MarketMaker::getOrderType() const
 void MarketMaker::makeAction(int a_OrderBookId, double a_currentTime)
 {
 	//m_linkToMarket->getOrderBook(a_OrderBookId)->cleanOrderBook();
-		OrderType thisOrderType = getOrderType() ;
+	OrderType thisOrderType = getOrderType() ;
 
-		if(thisOrderType == CANCEL_BUY ||thisOrderType == CANCEL_SELL)
+	if(thisOrderType == CANCEL_BUY ||thisOrderType == CANCEL_SELL)
+	{
+		if (a_currentTime == 0.0)// NO Cancellation at the initialisation of the process
 		{
-			if (a_currentTime == 0.0)// NO Cancellation at the initialisation of the process
+			return;
+		}
+		else
+		{
+			if(thisOrderType == CANCEL_BUY)
 			{
+				chooseOrdersToBeCanceled(a_OrderBookId,true,a_currentTime);
 				return;
 			}
 			else
 			{
-				if(thisOrderType == CANCEL_BUY)
-				{
-					chooseOrdersToBeCanceled(a_OrderBookId,true,a_currentTime);
-					return;
-				}
-				else
-				{
-					chooseOrdersToBeCanceled(a_OrderBookId,false,a_currentTime);
-					return;
-				}
+				chooseOrdersToBeCanceled(a_OrderBookId,false,a_currentTime);
+				return;
 			}
-			return;
 		}
-		int spread = m_linkToMarket->getOrderBook(a_OrderBookId)->getAskPrice() - m_linkToMarket->getOrderBook(a_OrderBookId)->getBidPrice();
+		return;
+	}
+	int spread = m_linkToMarket->getOrderBook(a_OrderBookId)->getAskPrice() - m_linkToMarket->getOrderBook(a_OrderBookId)->getBidPrice();
 
-		if(spread < 2 *  m_linkToMarket->getOrderBook(a_OrderBookId)->getTickSize()){return; }
-
-		if(spread >= 2 *  m_linkToMarket->getOrderBook(a_OrderBookId)->getTickSize()){
-			int thisOrderPrice = getOrderPrice(a_OrderBookId, thisOrderType) ;
-			int thisOrderVolume = getOrderVolume(thisOrderPrice, a_OrderBookId, thisOrderType) ;
-			int tickSize = m_linkToMarket->getOrderBook(a_OrderBookId)->getTickSize();
+	if(spread >= 2 *  m_linkToMarket->getOrderBook(a_OrderBookId)->getTickSize()){
+		int thisOrderPrice = getOrderPrice(a_OrderBookId, thisOrderType) ;
+		int thisOrderVolume = getOrderVolume(thisOrderPrice, a_OrderBookId, thisOrderType) ;
+		int tickSize = m_linkToMarket->getOrderBook(a_OrderBookId)->getTickSize();
+		submitOrder(
+			a_OrderBookId, a_currentTime,
+			thisOrderVolume,
+			thisOrderType,
+			thisOrderPrice
+			);
+		if (thisOrderType==LIMIT_BUY){
 			submitOrder(
 				a_OrderBookId, a_currentTime,
 				thisOrderVolume,
-				thisOrderType,
-				thisOrderPrice
-			);
-
-			if (thisOrderType==LIMIT_BUY){
-				submitOrder(
-					a_OrderBookId, a_currentTime,
-					thisOrderVolume,
-					LIMIT_SELL,
-					thisOrderPrice+tickSize
-			);
-			}
-			else if(thisOrderType==LIMIT_SELL){
-				submitOrder(
-					a_OrderBookId, a_currentTime,
-					thisOrderVolume,
-					LIMIT_BUY,
-					thisOrderPrice-tickSize
-			);
-			}		
+				LIMIT_SELL,
+				thisOrderPrice+tickSize
+				);
 		}
+		else if(thisOrderType==LIMIT_SELL){
+			submitOrder(
+				a_OrderBookId, a_currentTime,
+				thisOrderVolume,
+				LIMIT_BUY,
+				thisOrderPrice-tickSize
+				);
+		}		
+	}
 }
 
 void MarketMaker::chooseOrdersToBeCanceled(int a_OrderBookId, bool a_buySide, double a_time)
@@ -191,8 +188,4 @@ void MarketMaker::processInformation()
 {
 	// For exemple, read the market book history and decide to do something within a reaction time
 
-}
-
-void MarketMaker::cleanPending(){
-	m_pendingOrders.clear();
 }
