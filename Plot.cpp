@@ -55,7 +55,7 @@ void Plot::plot(std::string dataName, int size, const double *x, const double *y
 
 }
 //-----------------------------------------------------------------------------
-void Plot::plotPrices( const std::vector<double> & x, const std::vector<int> & y){
+void Plot::plotPrices( const concurrency::concurrent_vector<double> & x, const concurrency::concurrent_vector<int> & y){
 	std::ofstream outFile("Prices.data");
 	for(unsigned int i=0;i<x.size();i++){
 			outFile<<x[i]<<'\t'<<y[i]/100.0<<'\n';	
@@ -119,7 +119,7 @@ void Plot::plotOrderBook(	const std::vector<int> & x,
 	fprintf(m_gnuPlot, "set grid no ytics\n");
 	fprintf(m_gnuPlot, "set tic front\n");
 	fprintf(m_gnuPlot, "set xr [99.7:100.3]\n");
-	fprintf(m_gnuPlot, "set yr [-500:500]\n");	
+	fprintf(m_gnuPlot, "set yr [-1500:1500]\n");	
 	fprintf(m_gnuPlot, "set style fill solid 2.0 \n");
 	fprintf(m_gnuPlot, "set title \"Last Price = %f, Volatility = %f\"\n",  (double)last/100.0, volatility);
 	fprintf(m_gnuPlot, "set zeroaxis\n");

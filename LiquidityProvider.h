@@ -61,6 +61,9 @@ class LiquidityProvider : public Agent {
 
 		void cleanPending();
 
+		void printPending();
+
+
 
 	protected:
 		/*! \brief returns the order type

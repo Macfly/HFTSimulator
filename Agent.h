@@ -200,7 +200,7 @@ class Agent
 		 *
 		 */
 		
-		void submitOrder(int a_asset, double a_time, int a_volume, OrderType a_type, int a_price = 0);
+		void submitOrder(int a_asset, double a_time, int a_volume, OrderType a_type, int a_price = 0, int priority = 0);
 		/*! \brief returns the order type
 		 *
 		 */	

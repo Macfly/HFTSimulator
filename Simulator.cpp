@@ -31,8 +31,8 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 	aMarket->getOrderBook(a_orderBookId)->getOrderBookForPlot(price,priceQ);
 	last = aMarket->getOrderBook(a_orderBookId)->getPrice();
 
-	std::vector<int> historicPrices = aMarket->getOrderBook(a_orderBookId)->getHistoricPrices();
-	std::vector<double> transactionsTimes = aMarket->getOrderBook(a_orderBookId)->getTransactionsTimes();
+	concurrency::concurrent_vector<int> historicPrices = aMarket->getOrderBook(a_orderBookId)->getHistoricPrices();
+	concurrency::concurrent_vector<double> transactionsTimes = aMarket->getOrderBook(a_orderBookId)->getTransactionsTimes();
 
 	int sizePrices = historicPrices.size();
 	int sizeTransactionsTimes = transactionsTimes.size();
@@ -69,7 +69,7 @@ int nbAssets = 1;
 int storedDepth = 1;
 
 // Parameters for the liquidity provider
-double meanActionTimeLP = 0.5;
+double meanActionTimeLP = 0.35 ;
 int meanVolumeLP = 100;
 int meanPriceLagLP = 6;
 double buyFrequencyLP = 0.25;
@@ -86,20 +86,12 @@ int meanVolumeNT = 100;
 double buyFrequencyNT = 0.5;
 
 //if you use a uniform distribution
-int minVolumeNT=30;
+int minVolumeNT=0;
 int maxVolumeNT=100;
 
 double meanActionTimeLOT = meanDeltaTimeMarketOrder / percentageLargeOrders ;
 int meanVolumeLOT = 1000;
 double buyFrequencyLOT = 0.5;
-
-/*double meanActionTimeTF = 10 ;
-int meanVolumeTF = 1 ;
-
-double meanActionTimeFVT = 60 ;
-int meanVolumeFVT = 1 ;
-int fundamentalValueFVT = 10000 ;
-*/
 
 int nInitialOrders = 300;
 double simulationTimeStart = 0 ;
@@ -133,6 +125,9 @@ void runOrderBook(){
 
 int main(int argc, char* argv[])
 {
+	Plot * plotter2 = new Plot() ;
+	concurrency::concurrent_vector<double> transactionsTimes;
+	concurrency::concurrent_vector<int> historicPrices ;
 
 	Plot * plotter = new Plot() ;
 	std::ostringstream oss_marketName ;
@@ -177,7 +172,6 @@ int main(int argc, char* argv[])
 	for(int n=0; n<nInitialOrders; n++)
 	{
 		myLiquidityProvider->makeAction(1, 0.0);
-		//std::cout<<"nklhikh khk hkl hkl h h klh klh k hk "<<std::endl;
 	}
 
 	// Create one Noise Trader
@@ -222,8 +216,8 @@ int main(int argc, char* argv[])
 	double currentTime = simulationTimeStart ;
 	int i=1;
 
-	std::string input;
-	std::cin >> input;
+	//std::string input;
+	//std::cin >> input;
 
 	std::cout 
 		<< "Time 0 : [bid ; ask] = " 
@@ -235,7 +229,7 @@ int main(int argc, char* argv[])
 		<< std::endl ;
 	std::cout << "Order book initialized." << std::endl ;
 
-	std::cin >> input;
+	//std::cin >> input;
 
 	std::vector<double>  MidPriceTimeseries ;
 	try{
@@ -251,8 +245,9 @@ int main(int argc, char* argv[])
 
 			if (spread >= 2*myMarket->getOrderBook(1)->getTickSize()) {
 				myMarketMaker->makeAction( myMarketMaker->getTargetedStock(), currentTime) ;			
+			}else if(myMarket->getOrderBook(1)->getTotalAskQuantity() < 2000 || myMarket->getOrderBook(1)->getTotalBidQuantity() < 2000){
+				myLiquidityProvider->makeAction( myLiquidityProvider->getTargetedStock(), currentTime);
 			}
-
 			else{
 				actingAgent = myMarket->getNextActor() ;
 				actingAgent->makeAction( actingAgent->getTargetedStock(), currentTime);
@@ -286,6 +281,7 @@ int main(int argc, char* argv[])
 				std::cout << "MM: nStock=\t" << myMarketMaker->getStockQuantity(1) 
 					<< "\t Cash=\t" << myMarketMaker->getNetCashPosition() << std::endl<< std::endl<< std::endl ;				
 
+
 				i++;
 			}
 			// Update clock
@@ -296,78 +292,36 @@ int main(int argc, char* argv[])
 	{
 		std::cout <<e.what()<< std::endl ;
 	}
-	// Plot the process of prices
-	std::vector<int> historicPrices = myMarket->getOrderBook(1)->getHistoricPrices();
-	std::vector<double> transactionsTimes = myMarket->getOrderBook(1)->getTransactionsTimes();
-	Plot * plotter2 = new Plot() ;
+
+
+	int nbLPStocks = myLiquidityProvider->getStockQuantity(1);
+	int nbMMStocks = myMarketMaker->getStockQuantity(1);
+	double cashLP =  myLiquidityProvider->getNetCashPosition();
+	double cashMM =  myMarketMaker->getNetCashPosition();
+	if (nbLPStocks>0){
+		cashLP += nbLPStocks * myMarket->getOrderBook(1)->getAskPrice();
+	}
+	else if (nbLPStocks<0){
+		cashLP += nbLPStocks * myMarket->getOrderBook(1)->getBidPrice();
+	}
+	if (nbMMStocks>0){
+		cashMM += nbMMStocks * myMarket->getOrderBook(1)->getAskPrice();
+	}
+	else if (nbMMStocks<0){
+		cashMM += nbMMStocks * myMarket->getOrderBook(1)->getBidPrice();
+	}
+	std::cout<<"CASH POSITIONS : "<<std::endl;
+	std::cout << "LP: CASH =\t" << cashLP/100.0<<std::endl;
+	std::cout << "MM: CASH =\t" << cashMM/100.0<<std::endl;
+	std::cout << "NT: CASH =\t" << myNoiseTrader->getNetCashPosition()/100.0 <<std::endl;
+
+	historicPrices = myMarket->getOrderBook(1)->getHistoricPrices();
+	transactionsTimes = myMarket->getOrderBook(1)->getTransactionsTimes();
 	plotter2->plotPrices(transactionsTimes,historicPrices);
-	std::cout<<"passé!!!" << std::endl;
+
+	std::cout<<"done!!!" << std::endl;
 	int b;
 	std::cin>>b;
-	// Print stored history
-	// myMarket->getOrderBook(1)->printStoredOrderBookHistory();
 
-
-
-	/*	// Stats on mid price
-	Stats * myStats = new Stats(myMarket->getOrderBook(1)) ;
-	for(int samplingPeriod = 15 ; samplingPeriod<=960; samplingPeriod*=2)
-	{
-	myStats->printTimeSeries(MID,samplingPeriod) ;
-	std::vector<double> midPrice = myStats->getPriceTimeSeries(MID,samplingPeriod) ;
-	std::vector<double> MidPriceLogReturns ;
-	for(unsigned int k=1; k<midPrice.size() ; k++){
-	MidPriceLogReturns.push_back(log(midPrice[k])-log(midPrice[k-1])) ;
-	}
-	std::ostringstream dataLabel ;
-	dataLabel << "MidPrice_" << samplingPeriod << "_LogReturns" ;
-	myStats->plotPDF(dataLabel.str().c_str(),MidPriceLogReturns) ;
-	myStats->plotNormalizedPDF(dataLabel.str().c_str(),MidPriceLogReturns) ;
-	myStats->printAutocorrelation(dataLabel.str(), MidPriceLogReturns,(int) MidPriceLogReturns.size()/2, 1) ;
-	}
-
-	// Stats on spread
-	std::vector<double> spreadTimeSeries = myStats->getPriceTimeSeries(SPREAD,0.5) ;
-	myStats->plotPDF("Spread",spreadTimeSeries) ;
-	//myStats->printAutocorrelation("Spread", spreadTimeSeries, 57600, 1) ;
-
-	//// Print stored history
-	//myMarket->getOrderBook(1)->printStoredOrderBookHistory();
-	//
-	//// Stats on mid price
-	//Stats * myStats = new Stats(myMarket->getOrderBook(1)) ;
-	//for(int samplingPeriod = 15 ; samplingPeriod<=960; samplingPeriod*=2)
-	//{
-	//	myStats->printTimeSeries(MID,samplingPeriod) ;
-	//	std::vector<double> midPrice = myStats->getPriceTimeSeries(MID,samplingPeriod) ;
-	//	std::vector<double> MidPriceLogReturns ;
-	//	for(unsigned int k=1; k<midPrice.size() ; k++){
-	//		MidPriceLogReturns.push_back(log(midPrice[k])-log(midPrice[k-1])) ;
-	//	}
-	//	std::ostringstream dataLabel ;
-	//	dataLabel << "MidPrice_" << samplingPeriod << "_LogReturns" ;
-	//	myStats->plotPDF(dataLabel.str().c_str(),MidPriceLogReturns) ;
-	//	myStats->plotNormalizedPDF(dataLabel.str().c_str(),MidPriceLogReturns) ;
-	//	myStats->printAutocorrelation(dataLabel.str(), MidPriceLogReturns,(int) MidPriceLogReturns.size()/2, 1) ;
-	//}
-	//
-	//// Stats on spread
-	//std::vector<double> spreadTimeSeries = myStats->getPriceTimeSeries(SPREAD,0.5) ;
-	//myStats->plotPDF("Spread",spreadTimeSeries) ;
-	////myStats->printAutocorrelation("Spread", spreadTimeSeries, 57600, 1) ;
-
-	//// Stats on order signs of market orders
-	//std::vector<double> orderSigns = myStats->getOrderSignsTimeSeries(MARKET) ;
-	//std::ostringstream ss_tag ; ss_tag << "MarketOrders" ;
-	//myStats->printAutocorrelation(ss_tag.str(), orderSigns, (int)orderSigns.size()/2, 1) ;
-
-	//// Stats summary
-	//myStats->printSummary() ;
-
-	//// End of program
-	//delete myStats ;
-	delete myMarket ;
-	std::cout << "All done." << std::endl ;
-	*/
 	return 0;
 }

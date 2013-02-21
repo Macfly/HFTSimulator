@@ -57,6 +57,9 @@ void NoiseTrader::makeAction(int a_OrderBookId, double a_currentTime)
 	//std::cout<<"market order!!!"<<std::endl;
 	OrderType thisOrderType = getOrderType() ;
 	int thisOrderVolume = getOrderVolume() ;
+
+	//std::cout << "ask quant:" << m_linkToMarket->getOrderBook(a_OrderBookId)->getAskQ
+
 	submitOrder(
 		a_OrderBookId, a_currentTime,
 		thisOrderVolume,

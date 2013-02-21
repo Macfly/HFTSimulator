@@ -7,6 +7,7 @@
 
 #include <concurrent_queue.h>
 #include <concurrent_unordered_map.h>
+#include <concurrent_vector.h>
 
 #include "Order.h"
 
@@ -140,9 +141,9 @@ class OrderBook
 		 */
 		std::map< int , std::list < Order > > getAskQueue() const;
 
-		std::vector<int> getHistoricPrices();
+		concurrency::concurrent_vector<int> getHistoricPrices();
 
-		std::vector<double> getTransactionsTimes();
+		concurrency::concurrent_vector<double> getTransactionsTimes();
 
 		double getReturnsSumSquared();
 
@@ -215,9 +216,9 @@ class OrderBook
 		bool m_headerPrinted;
 
 		//contains the prices of the asset
-		std::vector<int> m_historicPrices;
+		concurrency::concurrent_vector <int> m_historicPrices;
 		//contains the times of transactions (Market orders)
-		std::vector<double> m_transactionsTimes;
+		concurrency::concurrent_vector <double> m_transactionsTimes;
 
 		
 		concurrency::concurrent_queue<Order> orders;

@@ -30,13 +30,14 @@ void Agent::setIdentifier(int a_identifier)
 	m_identifier = a_identifier;	
 }
 void Agent::submitOrder(int a_asset , double a_time ,
-						int	a_volume , OrderType a_type, int a_price )
+						int	a_volume , OrderType a_type, int a_price, int priority )
 {
 	if(a_volume!=0){
 		int l_orderIdentifier = m_linkToMarket->getOrderIdentifier();
 		Order l_order(a_asset , m_identifier ,a_time , a_price,
 			a_volume ,a_type ,
 			l_orderIdentifier, ALIVE);
+		
 		m_passedOrders[l_orderIdentifier] = l_order;
 		mtx_.lock();
 		m_pendingOrders[l_orderIdentifier] = l_order;

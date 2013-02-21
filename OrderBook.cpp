@@ -76,11 +76,11 @@ int OrderBook::getTickSize() const
 }
 int OrderBook::getBidQuantity() const
 {
-	return totalBidQuantity;
+	return quantity.at(getBidPrice());
 }
 int OrderBook::getAskQuantity() const
 {
-	return totalAskQuantity;
+	return quantity.at(getAskPrice());
 }
 int OrderBook::getDistanceToBestOppositeQuote(int a_price) const
 {
@@ -527,11 +527,11 @@ void OrderBook::setDefaultBidAsk(int bid, int ask){
 	m_defaultAsk = ask;
 }
 
-std::vector<int> OrderBook::getHistoricPrices(){
+concurrency::concurrent_vector<int> OrderBook::getHistoricPrices(){
 	return m_historicPrices;
 }
 
-std::vector<double> OrderBook::getTransactionsTimes(){
+concurrency::concurrent_vector<double> OrderBook::getTransactionsTimes(){
 	return m_transactionsTimes;
 }
 

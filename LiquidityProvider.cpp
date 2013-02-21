@@ -52,7 +52,8 @@ int LiquidityProvider::getOrderVolume(double price, int a_OrderBookId, OrderType
 		int currentPriceAsk = m_linkToMarket->getOrderBook(a_OrderBookId)->getAskPrice() ;
 
 		if ( price < currentPriceAsk && price>(currentPriceAsk-0.25*slotMax ) ) {
-			int volume = std::min((int)m_OrderVolumeDistribution->nextRandom(),100);
+			//int volume = std::min((int)m_OrderVolumeDistribution->nextRandom(),100);
+			int volume = (int)m_OrderVolumeDistribution->nextRandom();
 			return std::max(volume , 1  ) ;
 		}
 		else{
@@ -68,7 +69,8 @@ int LiquidityProvider::getOrderVolume(double price, int a_OrderBookId, OrderType
 		int currentPriceBid = m_linkToMarket->getOrderBook(a_OrderBookId)->getBidPrice() ;
 
 		if ( price > currentPriceBid && price<(currentPriceBid+0.25*slotMax ) ) {
-			int volume = std::min((int)m_OrderVolumeDistribution->nextRandom(),100);
+			//int volume = std::min((int)m_OrderVolumeDistribution->nextRandom(),100);
+			int volume = (int)m_OrderVolumeDistribution->nextRandom();
 			return std::max(volume , 1  ) ;
 		}
 		else{
@@ -132,6 +134,7 @@ OrderType LiquidityProvider::getOrderType() const
 
 void LiquidityProvider::makeAction(int a_OrderBookId, double a_currentTime)
 {
+
 	OrderType thisOrderType = getOrderType() ;
 	if(thisOrderType == CANCEL_BUY ||thisOrderType == CANCEL_SELL)
 	{
@@ -153,6 +156,7 @@ void LiquidityProvider::makeAction(int a_OrderBookId, double a_currentTime)
 			}
 		}
 	}
+
 	int thisOrderPrice = getOrderPrice(a_OrderBookId, thisOrderType) ;
 
 	int thisOrderVolume = getOrderVolume(thisOrderPrice, a_OrderBookId, thisOrderType);
@@ -174,12 +178,20 @@ void LiquidityProvider::chooseOrdersToBeCanceled(int a_OrderBookId, bool a_buySi
 
 	while(iter!=pendingOrdersCopy.end()){
 		OrderType thisOrderType = iter->second.getType() ;
-		if((thisOrderType==LIMIT_BUY && a_buySide)||(thisOrderType==LIMIT_SELL && !a_buySide))
-		{
-			double cancelAlea = m_cancelDistribution->nextRandom() ;
-			if(cancelAlea<m_cancelProbability){
+
+		if(m_linkToMarket->getOrderBook(a_OrderBookId)->getDistanceToBestOppositeQuote( iter->second.getPrice())>18){
+			if(thisOrderType == LIMIT_BUY)
+				submitCancellation(a_OrderBookId,iter->second.getIdentifier(), a_time, CANCEL_BUY) ;
+			else
+				submitCancellation(a_OrderBookId,iter->second.getIdentifier(), a_time, CANCEL_SELL) ;
+		}else {
+			if((thisOrderType==LIMIT_BUY && a_buySide)||(thisOrderType==LIMIT_SELL && !a_buySide))
+			{
 				OrderType type = a_buySide ? CANCEL_BUY : CANCEL_SELL;
-				submitCancellation(a_OrderBookId,iter->second.getIdentifier(), a_time, type) ;
+				double cancelAlea = m_cancelDistribution->nextRandom() ;
+				if(cancelAlea<m_cancelProbability){
+					submitCancellation(a_OrderBookId,iter->second.getIdentifier(), a_time, type) ;
+				}
 			}
 		}
 		iter++ ;
@@ -188,6 +200,24 @@ void LiquidityProvider::chooseOrdersToBeCanceled(int a_OrderBookId, bool a_buySi
 void LiquidityProvider::processInformation()
 {
 	// For exemple, read the market book history and decide to do something within a reaction time
+
+}
+
+void LiquidityProvider::printPending()
+{
+	mtx_.lock();
+	concurrency::concurrent_unordered_map<int,Order> pendingOrdersCopy(m_pendingOrders) ;
+	concurrency::concurrent_unordered_map<int,Order>::iterator iter = pendingOrdersCopy.begin();
+	mtx_.unlock();
+
+	while(iter!=pendingOrdersCopy.end()){
+		Order thisOrder = iter->second;
+
+		std::cout << "price: " << thisOrder.getPrice() << std::endl;
+		std::cout << "volume: " << thisOrder.getVolume() << std::endl;
+
+		iter++ ;
+	}
 
 }
 

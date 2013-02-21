@@ -103,7 +103,6 @@
     <ClCompile Include="Simulator.cpp" />
     <ClCompile Include="ConfigFile.cpp" />
     <ClCompile Include="Chameleon.cpp" />
-    <ClCompile Include="Source.cpp" />
     <ClCompile Include="Stats.cpp" />
     <ClCompile Include="LiquidityProvider.cpp" />
     <ClCompile Include="NoiseTrader.cpp" />
