@@ -351,9 +351,6 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 			{
 				m_linkToMarket->notifyPartialExecution(l_fifoOrder->m_owner,l_fifoOrder->m_globalOrderIdentifier,a_order.m_time,a_order.m_volume,l_fifoOrder->m_price);
 				m_linkToMarket->notifyExecution(a_order.m_owner,a_order.m_globalOrderIdentifier,a_order.m_time,l_fifoOrder->m_price);
-
-				std::cout << "LOL :" << l_fifoOrder->m_volume << std::endl;
-
 				l_fifoOrder->m_volume -= a_order.m_volume;
 				quantity[l_fifoOrder->m_price] -= a_order.getVolume();
 				agentsOrders[l_fifoOrder->getOwner()][l_fifoOrder->m_price] -= a_order.getVolume();

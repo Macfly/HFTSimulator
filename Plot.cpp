@@ -115,10 +115,52 @@ void Plot::plotOrderBook(const std::vector<int> & x,
 
 	outFile.close();
 
-	//Market maker
-	for(unsigned int k=0;k<MMprices.size();k++){
-		outFileMM << MMprices[k]/100.0 <<'\t'<< MMvolumes[k]<<'\n';
+/*	std::cout <<"size : "<< MMprices.size() << std::endl;
+	for(int l =0 ; l< MMprices.size(); l++)
+		std::cout << "prices : " << MMprices[l] << std::endl;
+*/
+	if(MMprices.size() > 1) {
+		int index2(0);
+		std::vector<int> x3;
+		std::vector<int> y3;
+		x3.push_back(MMprices[0]);
+		y3.push_back(MMvolumes[0]);
+		pold=MMprices[0];
+		for(unsigned int j=1;j<MMprices.size();j++) //
+		{
+			if(MMprices[j] != pold+1) {
+				//outFile<<(pold+1)/100.0<<'\t'<<0<<'\n';
+				x3.push_back(pold+1);
+				y3.push_back(0);
+				pold = pold+1;
+				j--;
+			}else{
+				//outFile<<x[i]/100.0<<'\t'<<y[i]<<'\n';
+				x3.push_back(MMprices[j]);
+				y3.push_back(MMvolumes[j]);
+				pold = MMprices[j];
+			}
+		}
+		pold=x3[0];
+		for(unsigned int k=1; k<x3.size(); k++){
+			if(x3[k] != pold+1) {
+				outFileMM<<(pold+1)/100.0<<'\t'<<0<<'\n';
+				pold = pold+1;
+				k--;
+			}else{
+				outFileMM<<x3[k]/100.0<<'\t'<<y3[k]<<'\n';
+				pold = x3[k];
+			}
+		}
+	}else if(MMprices.size() == 1){		
+		outFileMM<<MMprices[0]/100.0<<'\t'<<MMvolumes[0]<<'\n';
 	}
+
+
+	//Market maker
+	/*for(unsigned int k=0;k<MMprices.size();k++){
+		outFileMM << MMprices[k]/100.0 <<'\t'<< MMvolumes[k]<<'\n';
+	}*/
 	outFileMM.close();
 	
 	//! on lance la commande plot

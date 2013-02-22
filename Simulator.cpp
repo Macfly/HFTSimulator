@@ -40,7 +40,7 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 	int sizePrices = historicPrices.size();
 	int sizeTransactionsTimes = transactionsTimes.size();
 
-	std::cout<<sizePrices<<std::endl;
+	//std::cout<<sizePrices<<std::endl;
 	for (int k=0;k<sizePrices;k++){
 		//	int a;
 		//std::cout<< aMarket->getOrderBook(1)->getHistoricPrices()[k]<<std::endl;
@@ -57,14 +57,14 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 			variance +=  pow(double( double( double(historicPrices[z+1])-double(historicPrices[z]))/double(historicPrices[z])),2) ;
 		}
 	}
-	std::cout<<"Transaction Time = "<<transactionsTimes[sizeTransactionsTimes-1]/100.0<<std::endl;
+//	std::cout<<"Transaction Time = "<<transactionsTimes[sizeTransactionsTimes-1]/100.0<<std::endl;
 	if (transactionsTimes[sizeTransactionsTimes-1]!=0){
 		double annualTime = ((((transactionsTimes[sizeTransactionsTimes-1]/1000.0)/60)/60)/24)/365; 
 		variance = aMarket->getOrderBook(a_orderBookId)->getReturnsSumSquared()/annualTime;
 	}
 	double volatility = pow(variance, 0.5);
 
-	std::cout<<"vol = "<<volatility<<std::endl;
+//	std::cout<<"vol = "<<volatility<<std::endl;
 	aplotter->plotOrderBook(price,priceQ,last, volatility, priceMM, priceQMM);
 }
 
