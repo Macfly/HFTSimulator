@@ -110,6 +110,9 @@ OrderType MarketMaker::getOrderType() const
 
 void MarketMaker::makeAction(int a_OrderBookId, double a_currentTime)
 {
+
+	cleanObsoletOrders(a_OrderBookId, a_currentTime);
+
 	//m_linkToMarket->getOrderBook(a_OrderBookId)->cleanOrderBook();
 	OrderType thisOrderType = getOrderType() ;
 
@@ -140,7 +143,7 @@ void MarketMaker::makeAction(int a_OrderBookId, double a_currentTime)
 		int thisOrderPrice = getOrderPrice(a_OrderBookId, thisOrderType) ;
 		int thisOrderVolume = getOrderVolume(thisOrderPrice, a_OrderBookId, thisOrderType) ;
 		int tickSize = m_linkToMarket->getOrderBook(a_OrderBookId)->getTickSize();
-		
+
 		int priority = m_activateHFTPriority ? 10 : 0;
 
 
@@ -196,4 +199,24 @@ void MarketMaker::processInformation()
 {
 	// For exemple, read the market book history and decide to do something within a reaction time
 
+}
+
+void MarketMaker::cleanObsoletOrders(int orderBookID, double a_currentTime){
+	mtx_.lock();
+	concurrency::concurrent_unordered_map<int,Order> pendingOrdersCopy(m_pendingOrders) ;
+	concurrency::concurrent_unordered_map<int,Order>::iterator iter = pendingOrdersCopy.begin();
+	mtx_.unlock();
+
+	while(iter!=pendingOrdersCopy.end()){
+		if(iter->second.getType() == LIMIT_BUY && 
+			(m_linkToMarket-> getOrderBook(orderBookID)->getBidPrice() - iter->second.getPrice()) >= 
+			 m_linkToMarket-> getOrderBook(orderBookID)->getTickSize()){
+				submitCancellation(orderBookID,iter->second.getIdentifier(), a_currentTime, CANCEL_BUY) ;
+		}else if(iter->second.getType() == LIMIT_SELL && 
+			(iter->second.getPrice() - m_linkToMarket-> getOrderBook(orderBookID)->getAskPrice()) >= 
+			 m_linkToMarket-> getOrderBook(orderBookID)->getTickSize()){
+				submitCancellation(orderBookID,iter->second.getIdentifier(), a_currentTime, CANCEL_SELL) ;
+		}
+		iter++ ;
+	}
 }

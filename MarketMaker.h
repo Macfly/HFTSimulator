@@ -56,7 +56,6 @@ public:
 
 	void cleanPending();
 
-
 protected:
 	/*! \brief returns the order type
 	*
@@ -87,7 +86,7 @@ protected:
 	*/
 	void chooseOrdersToBeCanceled(int a_OrderBookId, bool a_buySide, double a_time);
 
-
+	void cleanObsoletOrders(int orderBookID, double a_currentTime);
 
 private:
 
@@ -110,4 +109,6 @@ private:
 	double m_VolumeProportion;
 
 	bool m_activateHFTPriority;
+
+
 };

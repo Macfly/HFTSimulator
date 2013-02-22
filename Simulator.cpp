@@ -80,6 +80,13 @@ double cancelBuyFrequencyLP = 0.25;
 double cancelSellFrequencyLP = 0.25;
 double uniformCancellationProbability = 0.01;
 
+
+//Parameters for the Market Maker
+double buyFrequencyMM=1;
+double cancelBuyFrequencyMM=0;
+double cancelSellFrequencyMM=0;
+double uniformCancellationProbabilityMM=0;
+
 // Parameters for the liquidity takers : NT and LOT
 double meanDeltaTimeMarketOrder = 2.2 ;
 double percentageLargeOrders = 0.01 ;
@@ -102,7 +109,7 @@ double simulationTimeStop = 1000 ;
 double printIntervals = 10; //900 ;
 double impactMeasureLength = 60 ;
 
-bool activateHFTPriority = false;
+bool activateHFTPriority = true;
 
 Market *myMarket;
 
@@ -188,11 +195,11 @@ int main(int argc, char* argv[])
 		MarketOrderActionTimeDistribution,
 		MarketOrderOrderVolumeDistribution,
 		MarketOrderOrderPriceDistribution,
-		buyFrequencyLP,
+		buyFrequencyMM,
 		1,
-		cancelBuyFrequencyLP,
-		cancelSellFrequencyLP,
-		uniformCancellationProbability,
+		cancelBuyFrequencyMM,
+		cancelSellFrequencyMM,
+		uniformCancellationProbabilityMM,
 		0.1,
 		activateHFTPriority
 		) ;
@@ -289,13 +296,13 @@ int main(int argc, char* argv[])
 		cashLP += nbLPStocks * myMarket->getOrderBook(1)->getAskPrice();
 	}
 	else if (nbLPStocks<0){
-		cashLP += nbLPStocks * myMarket->getOrderBook(1)->getBidPrice();
+		cashLP -= nbLPStocks * myMarket->getOrderBook(1)->getBidPrice();
 	}
 	if (nbMMStocks>0){
 		cashMM += nbMMStocks * myMarket->getOrderBook(1)->getAskPrice();
 	}
 	else if (nbMMStocks<0){
-		cashMM += nbMMStocks * myMarket->getOrderBook(1)->getBidPrice();
+		cashMM -= nbMMStocks * myMarket->getOrderBook(1)->getBidPrice();
 	}
 	std::cout<<"CASH POSITIONS : "<<std::endl;
 	std::cout << "LP: CASH =\t" << cashLP/100.0<<std::endl;
