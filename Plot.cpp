@@ -179,7 +179,7 @@ void Plot::plotOrderBook(const std::vector<int> & x,
 	fprintf(m_gnuPlot, "set xtics front");
 	fprintf(m_gnuPlot, "show xtics\n");
 	
-	fprintf(m_gnuPlot,"plot \"OrderBook.data\"  using 1:($2 < 0? $2 : 1/0 ) lc rgb \"blue\" title \"Bid (Achat)\"with boxes,\'\' using 1:($2 > 0 ? $2 : 1/0 ) lc rgb \"red\"  title \"Ask (Vente)\" with boxes , \ \"MMdata.data\" using 1:2 lc rgb \"green\" with boxes \n");
+	fprintf(m_gnuPlot,"plot \"OrderBook.data\"  using 1:($2 < 0? $2 : 1/0 ) lc rgb \"blue\" title \"Bid (Achat)\"with boxes,\'\' using 1:($2 > 0 ? $2 : 1/0 ) lc rgb \"red\"  title \"Ask (Vente)\" with boxes , \ \"MMdata.data\" using 1:2 lc rgb \"green\" title \"HFT\" with boxes \n");
 
 	//fprintf(m_gnuPlot,"plot \"OrderBook.data\"  using 1:($2 < 0? $2 : 1/0 ) lc rgb \"red\" title \"Bid (Achat)\"with boxes,\'\' using 1:($2 > 0 ? $2 : 1/0 ) lc rgb \"blue\"  title \"Ask (Vente)\" with boxes \n");
 	fflush (m_gnuPlot);
