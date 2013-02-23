@@ -169,6 +169,8 @@ public:
 
 	bool open;
 
+	int getNbOrder();
+
 private:
 	/*! cancel a specific given order
 	* 
@@ -247,6 +249,8 @@ private:
 
 	int bid;
 	int ask;
+
+	int nbOrder;
 
 };
 template <typename K, typename V>

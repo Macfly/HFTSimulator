@@ -31,6 +31,7 @@ OrderBook::OrderBook(Market *a_market, int a_identifier, int a_tickSize, int a_d
 	m_activateHFTPriority = false;
 	bid = a_defaultBid;
 	ask = a_defaultAsk;
+	nbOrder = 0;
 }
 OrderBook::~OrderBook()
 {
@@ -107,6 +108,10 @@ int OrderBook::getAskQuantity()
 {
 	return quantity.at(getAskPrice());
 }
+
+int OrderBook::getNbOrder(){
+	return nbOrder;
+}
 int OrderBook::getDistanceToBestOppositeQuote(int a_price) 
 {
 	int l_ask = getAskPrice();
@@ -172,6 +177,7 @@ void OrderBook::runOrderBook()
 			//if(m_storeOrderHistory) m_orderHistory.push_back(orderToExecute) ;
 			m_linkToMarket->updateCurrentTime(orderToExecute.m_time);
 			m_linkToMarket->notifyAllAgents();
+			nbOrder++;
 			//std::cout << "after notity" << std::endl;
 		}
 	}

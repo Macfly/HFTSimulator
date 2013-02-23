@@ -57,14 +57,14 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 			variance +=  pow(double( double( double(historicPrices[z+1])-double(historicPrices[z]))/double(historicPrices[z])),2) ;
 		}
 	}
-//	std::cout<<"Transaction Time = "<<transactionsTimes[sizeTransactionsTimes-1]/100.0<<std::endl;
+	//	std::cout<<"Transaction Time = "<<transactionsTimes[sizeTransactionsTimes-1]/100.0<<std::endl;
 	if (transactionsTimes[sizeTransactionsTimes-1]!=0){
 		double annualTime = ((((transactionsTimes[sizeTransactionsTimes-1]/1000.0)/60)/60)/24)/365; 
 		variance = aMarket->getOrderBook(a_orderBookId)->getReturnsSumSquared()/annualTime;
 	}
 	double volatility = pow(variance, 0.5);
 
-//	std::cout<<"vol = "<<volatility<<std::endl;
+	//	std::cout<<"vol = "<<volatility<<std::endl;
 	aplotter->plotOrderBook(price,priceQ,last, volatility, priceMM, priceQMM);
 }
 
@@ -105,8 +105,8 @@ double buyFrequencyLOT = 0.5;
 
 int nInitialOrders = 300;
 double simulationTimeStart = 0 ;
-double simulationTimeStop = 500 ;
-double printIntervals = 10; //900 ;
+double simulationTimeStop = 1000 ;
+double printIntervals = 1000; //900 ;
 double impactMeasureLength = 60 ;
 
 bool activateHFTPriority = true;
@@ -162,7 +162,7 @@ int main(int argc, char* argv[])
 	//create the orderBookThread
 	actors.create_thread(boost::bind(&runOrderBook));
 
-	std::cout<<"started "<<std::endl;
+	clock_t start = clock();
 
 	// Submit nInitialOrders limit orders to initialize order book
 	for(int n=0; n<nInitialOrders; n++)
@@ -266,7 +266,7 @@ int main(int argc, char* argv[])
 					<< std::endl;
 
 				// Plot order book
-				plotOrderBook(myMarket,plotter,1);
+				//plotOrderBook(myMarket,plotter,1);
 
 				// Agents'portfolios
 				std::cout << "LP: nStock=\t" << myLiquidityProvider->getStockQuantity(1) 
@@ -307,6 +307,14 @@ int main(int argc, char* argv[])
 	else if (nbMMStocks<0){
 		cashMM -= nbMMStocks * myMarket->getOrderBook(1)->getBidPrice();
 	}
+
+	clock_t end = clock();
+	unsigned int total_time_ticks = (unsigned int)(end - start) / 1000;
+
+	std::cout<<"Execution time (s) : " << total_time_ticks <<std::endl;
+	std::cout<<"NB Order processed : " << myMarket->getOrderBook(1)->getNbOrder()<<std::endl;
+	std::cout<<"NB Order/second: " << myMarket->getOrderBook(1)->getNbOrder() /total_time_ticks <<std::endl;
+
 	std::cout<<"CASH POSITIONS : "<<std::endl;
 	std::cout << "LP: CASH =\t" << cashLP/100.0<<std::endl;
 	std::cout << "MM: CASH =\t" << cashMM/100.0<<std::endl;
