@@ -82,7 +82,7 @@ double uniformCancellationProbability = 0.01;
 
 
 //Parameters for the Market Maker
-double buyFrequencyMM=1;
+double buyFrequencyMM=0.5;
 double cancelBuyFrequencyMM=0;
 double cancelSellFrequencyMM=0;
 double uniformCancellationProbabilityMM=0;
@@ -105,7 +105,7 @@ double buyFrequencyLOT = 0.5;
 
 int nInitialOrders = 300;
 double simulationTimeStart = 0 ;
-double simulationTimeStop = 1000 ;
+double simulationTimeStop = 500 ;
 double printIntervals = 10; //900 ;
 double impactMeasureLength = 60 ;
 
@@ -161,6 +161,7 @@ int main(int argc, char* argv[])
 
 	//create the orderBookThread
 	actors.create_thread(boost::bind(&runOrderBook));
+
 	std::cout<<"started "<<std::endl;
 
 	// Submit nInitialOrders limit orders to initialize order book
@@ -205,7 +206,7 @@ int main(int argc, char* argv[])
 		) ;
 	myMarket->registerAgent(myMarketMaker);
 
-
+	plotOrderBook(myMarket,plotter,1);
 
 	// Simulate market
 	std::cout << "Simulation starts. " << std::endl ;
@@ -287,6 +288,8 @@ int main(int argc, char* argv[])
 		std::cout <<e.what()<< std::endl ;
 	}
 
+	myMarket->getOrderBook(1)->open = false;
+	actors.join_all();
 
 	int nbLPStocks = myLiquidityProvider->getStockQuantity(1);
 	int nbMMStocks = myMarketMaker->getStockQuantity(1);

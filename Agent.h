@@ -220,7 +220,7 @@ class Agent
 		/*! \brief submits a cancellation demand to the market
 		 *
 		 */
-		void submitCancellation(int a_OrderBookId,int a_orderIdentifier, double a_time , OrderType type);
+		void submitCancellation(int a_OrderBookId,int a_orderIdentifier, int a_price, double a_time , OrderType type);
 
 };
 

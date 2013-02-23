@@ -46,9 +46,9 @@ void Agent::submitOrder(int a_asset , double a_time ,
 	}
 }
 
-void Agent::submitCancellation(int a_OrderBookId,int a_orderIdentifier, double a_time, OrderType type)
+void Agent::submitCancellation(int a_OrderBookId,int a_orderIdentifier, int a_price,  double a_time, OrderType type)
 {
-	Order l_order(a_OrderBookId , m_identifier ,a_time , 0,
+	Order l_order(a_OrderBookId , m_identifier ,a_time , a_price,
 		0 ,type ,
 		a_orderIdentifier, ALIVE);
 

@@ -189,7 +189,7 @@ void MarketMaker::chooseOrdersToBeCanceled(int a_OrderBookId, bool a_buySide, do
 			double cancelAlea = m_cancelDistribution->nextRandom() ;
 			if(cancelAlea<m_cancelProbability){
 				OrderType type = a_buySide ? CANCEL_BUY : CANCEL_SELL;
-				submitCancellation(a_OrderBookId,iter->second.getIdentifier(), a_time, type) ;
+				submitCancellation(a_OrderBookId,iter->second.getIdentifier(), iter->second.getPrice(), a_time, type) ;
 			}
 		}
 		iter++ ;
@@ -211,11 +211,11 @@ void MarketMaker::cleanObsoletOrders(int orderBookID, double a_currentTime){
 		if(iter->second.getType() == LIMIT_BUY && 
 			(m_linkToMarket-> getOrderBook(orderBookID)->getBidPrice() - iter->second.getPrice()) >= 
 			 m_linkToMarket-> getOrderBook(orderBookID)->getTickSize()){
-				submitCancellation(orderBookID,iter->second.getIdentifier(), a_currentTime, CANCEL_BUY) ;
+				submitCancellation(orderBookID,iter->second.getIdentifier(),iter->second.getPrice(), a_currentTime, CANCEL_BUY) ;
 		}else if(iter->second.getType() == LIMIT_SELL && 
 			(iter->second.getPrice() - m_linkToMarket-> getOrderBook(orderBookID)->getAskPrice()) >= 
 			 m_linkToMarket-> getOrderBook(orderBookID)->getTickSize()){
-				submitCancellation(orderBookID,iter->second.getIdentifier(), a_currentTime, CANCEL_SELL) ;
+				submitCancellation(orderBookID,iter->second.getIdentifier(), iter->second.getPrice(), a_currentTime, CANCEL_SELL) ;
 		}
 		iter++ ;
 	}

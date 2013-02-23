@@ -213,16 +213,16 @@ void LiquidityProvider::chooseOrdersToBeCanceled(int a_OrderBookId, bool a_buySi
 
 		if(m_linkToMarket->getOrderBook(a_OrderBookId)->getDistanceToBestOppositeQuote( iter->second.getPrice())>18){
 			if(thisOrderType == LIMIT_BUY)
-				submitCancellation(a_OrderBookId,iter->second.getIdentifier(), a_time, CANCEL_BUY) ;
+				submitCancellation(a_OrderBookId,iter->second.getIdentifier(), iter->second.getPrice(), a_time, CANCEL_BUY) ;
 			else
-				submitCancellation(a_OrderBookId,iter->second.getIdentifier(), a_time, CANCEL_SELL) ;
+				submitCancellation(a_OrderBookId,iter->second.getIdentifier(), iter->second.getPrice(),  a_time, CANCEL_SELL) ;
 		}else {
 			if((thisOrderType==LIMIT_BUY && a_buySide)||(thisOrderType==LIMIT_SELL && !a_buySide))
 			{
 				OrderType type = a_buySide ? CANCEL_BUY : CANCEL_SELL;
 				double cancelAlea = m_cancelDistribution->nextRandom() ;
 				if(cancelAlea<m_cancelProbability){
-					submitCancellation(a_OrderBookId,iter->second.getIdentifier(), a_time, type) ;
+					submitCancellation(a_OrderBookId,iter->second.getIdentifier(),iter->second.getPrice(), a_time, type) ;
 				}
 			}
 		}
