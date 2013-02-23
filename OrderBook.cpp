@@ -543,9 +543,9 @@ void OrderBook::processSellCancellation(int a_agentIdentifier,int a_orderIdentif
 		}
 
 		// erase it
-		/*quantity[it_l_order->m_price] -= it_l_order->m_volume;
+		quantity[it_l_order->m_price] -= it_l_order->m_volume;
 		agentsOrders[a_agentIdentifier][it_l_order->m_price] -= it_l_order->m_volume;
-		totalAskQuantity -= it_l_order->m_volume;*/
+		totalAskQuantity -= it_l_order->m_volume;
 		itPrice->second.erase(it_l_order) ;
 
 		//pop the queue from the list if empty
