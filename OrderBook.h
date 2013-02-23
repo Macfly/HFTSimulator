@@ -171,6 +171,9 @@ public:
 
 	int getNbOrder();
 
+	double getQuantityExchanged();
+	
+
 private:
 	/*! cancel a specific given order
 	* 
@@ -251,6 +254,8 @@ private:
 	int ask;
 
 	int nbOrder;
+
+	double quantityExchanged;
 
 };
 template <typename K, typename V>

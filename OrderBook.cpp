@@ -32,6 +32,7 @@ OrderBook::OrderBook(Market *a_market, int a_identifier, int a_tickSize, int a_d
 	bid = a_defaultBid;
 	ask = a_defaultAsk;
 	nbOrder = 0;
+	quantityExchanged = 0;
 }
 OrderBook::~OrderBook()
 {
@@ -112,6 +113,11 @@ int OrderBook::getAskQuantity()
 int OrderBook::getNbOrder(){
 	return nbOrder;
 }
+
+double OrderBook::getQuantityExchanged(){
+	return quantityExchanged;
+}
+
 int OrderBook::getDistanceToBestOppositeQuote(int a_price) 
 {
 	int l_ask = getAskPrice();
@@ -284,6 +290,9 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 				agentsOrders[l_fifoOrder->getOwner()][l_fifoOrder->m_price] -= a_order.getVolume();
 
 				totalAskQuantity -= l_fifoOrder->m_volume;
+
+				quantityExchanged += l_fifoOrder->m_volume;
+
 				iter->second.pop_front();
 				updateAskPrice();
 				/*if (m_storeOrderBookHistory)
@@ -315,9 +324,13 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 				quantity[l_fifoOrder->m_price] -= a_order.getVolume();
 				agentsOrders[l_fifoOrder->getOwner()][l_fifoOrder->m_price] -= a_order.getVolume();
 				totalAskQuantity -= a_order.getVolume();
+
+				quantityExchanged += a_order.getVolume();
+
 				a_order.m_volume = 0;
 				m_last = l_fifoOrder->m_price;
 				m_lastQ = a_order.m_volume;
+
 
 				/*if (m_storeOrderBookHistory)
 				{
@@ -347,6 +360,9 @@ void OrderBook::processMarketBuyOrder(Order & a_order)
 				quantity[l_fifoOrder->m_price] -= l_fifoOrder->m_volume;
 				agentsOrders[l_fifoOrder->getOwner()][l_fifoOrder->m_price] -= l_fifoOrder->getVolume();
 				totalAskQuantity -= l_fifoOrder->m_volume;
+
+				quantityExchanged += l_fifoOrder->m_volume;
+
 				m_last = l_fifoOrder->m_price;
 				m_lastQ = l_fifoOrder->m_volume;
 
@@ -414,6 +430,9 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 				quantity[l_fifoOrder->m_price] -= l_fifoOrder->m_volume;
 				agentsOrders[l_fifoOrder->getOwner()][l_fifoOrder->m_price] -= l_fifoOrder->m_volume;
 				totalBidQuantity -= l_fifoOrder->m_volume;
+
+				quantityExchanged += l_fifoOrder->m_volume;
+
 				iter->second.pop_front();
 
 				updateBidPrice();
@@ -446,6 +465,7 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 				quantity[l_fifoOrder->m_price] -= a_order.getVolume();
 				agentsOrders[l_fifoOrder->getOwner()][l_fifoOrder->m_price] -= a_order.getVolume();
 				totalBidQuantity -= a_order.getVolume();
+				quantityExchanged += a_order.getVolume();
 				a_order.m_volume = 0;
 				m_last = l_fifoOrder->m_price;
 				m_lastQ = l_fifoOrder->m_volume;				
@@ -477,6 +497,9 @@ void OrderBook::processMarketSellOrder(Order & a_order)
 				quantity[l_fifoOrder->m_price] -= l_fifoOrder->m_volume;
 				agentsOrders[l_fifoOrder->getOwner()][l_fifoOrder->m_price] -= l_fifoOrder->m_volume;
 				totalBidQuantity -= l_fifoOrder->m_volume;
+
+				quantityExchanged += l_fifoOrder->m_volume;
+
 				m_last = l_fifoOrder->m_price;
 				m_lastQ = l_fifoOrder->m_volume;
 

@@ -313,7 +313,8 @@ int main(int argc, char* argv[])
 
 	std::cout<<"Execution time (s) : " << total_time_ticks <<std::endl;
 	std::cout<<"NB Order processed : " << myMarket->getOrderBook(1)->getNbOrder()<<std::endl;
-	std::cout<<"NB Order/second: " << myMarket->getOrderBook(1)->getNbOrder() /total_time_ticks <<std::endl;
+	std::cout<<"NB Order/second : " << myMarket->getOrderBook(1)->getNbOrder() /total_time_ticks <<std::endl;
+	std::cout<<"Quantity exchanged : " << myMarket->getOrderBook(1)->getQuantityExchanged() <<std::endl;
 
 	std::cout<<"CASH POSITIONS : "<<std::endl;
 	std::cout << "LP: CASH =\t" << cashLP/100.0<<std::endl;
