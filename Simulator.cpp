@@ -17,8 +17,11 @@
 #include "Stats.h"
 #include "RandomNumberGenerator.h"
 
+
+
 #include <boost\thread.hpp>
 #include "MarketMaker.h"
+
 
 extern bool USE_PRIORITY = true;
 
@@ -104,11 +107,11 @@ double buyFrequencyLOT = 0.5;
 
 int nInitialOrders = 300;
 double simulationTimeStart = 0 ;
-double simulationTimeStop = 1000;
-double printIntervals = 2000; //900 ;
+double simulationTimeStop = 100000;
+double printIntervals = 20000000; //900 ;
 double impactMeasureLength = 60 ;
 
-bool activateHFTPriority = false;
+bool activateHFTPriority = true;
 
 Market *myMarket;
 
@@ -143,7 +146,7 @@ int main(int argc, char* argv[])
 	std::ofstream outFileCashMM("cashMM.data", std::ios::app);
 	std::ofstream outFileCashNT("cashNT.data", std::ios::app);
 	std::ofstream outFileClosingPrices("closingPrices.data", std::ios::app);
-	int nbSimulMonteCarlo=100;
+	int nbSimulMonteCarlo=1;
 
 	for(int k=0; k<nbSimulMonteCarlo ; k++){
 		myMarket = new Market(oss_marketName.str());
