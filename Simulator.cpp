@@ -62,14 +62,14 @@ void plotOrderBook(Market *aMarket,Plot* aplotter,int a_orderBookId)
 			variance +=  pow(double( double( double(historicPrices[z+1])-double(historicPrices[z]))/double(historicPrices[z])),2) ;
 		}
 	}
-//	std::cout<<"Transaction Time = "<<transactionsTimes[sizeTransactionsTimes-1]/100.0<<std::endl;
+	//	std::cout<<"Transaction Time = "<<transactionsTimes[sizeTransactionsTimes-1]/100.0<<std::endl;
 	if (transactionsTimes[sizeTransactionsTimes-1]!=0){
 		double annualTime = ((((transactionsTimes[sizeTransactionsTimes-1]/1000.0)/60)/60)/24)/365; 
 		variance = aMarket->getOrderBook(a_orderBookId)->getReturnsSumSquared()/annualTime;
 	}
 	double volatility = pow(variance, 0.5);
 
-//	std::cout<<"vol = "<<volatility<<std::endl;
+	//	std::cout<<"vol = "<<volatility<<std::endl;
 	aplotter->plotOrderBook(price,priceQ,last, volatility, priceMM, priceQMM);
 }
 
@@ -115,6 +115,8 @@ double impactMeasureLength = 60 ;
 
 bool activateHFTPriority = true;
 
+int nbSimulMonteCarlo=1;
+
 Market *myMarket;
 
 void runOrderBook(){
@@ -148,7 +150,6 @@ int main(int argc, char* argv[])
 	std::ofstream outFileCashMM("cashMM.data", std::ios::app);
 	std::ofstream outFileCashNT("cashNT.data", std::ios::app);
 	std::ofstream outFileClosingPrices("closingPrices.data", std::ios::app);
-	int nbSimulMonteCarlo=1;
 
 	for(int k=0; k<nbSimulMonteCarlo ; k++){
 		myMarket = new Market(oss_marketName.str());
@@ -208,7 +209,7 @@ int main(int argc, char* argv[])
 			NoiseTraderOrderVolumeDistribution,
 			buyFrequencyNT,1) ;
 		myMarket->registerAgent(myNoiseTrader);
-		
+
 		//Create one Market Maker
 		DistributionExponential * MarketOrderActionTimeDistribution = new DistributionExponential(myRNG, meanActionTimeLP) ;
 		//DistributionExponential *  LimitOrderOrderVolumeDistribution = new DistributionExponential(myRNG, meanVolumeLP) ;
@@ -216,29 +217,29 @@ int main(int argc, char* argv[])
 		//DistributionConstant * LimitOrderOrderVolumeDistribution = new DistributionConstant(myRNG, meanVolumeLP) ;
 		DistributionExponential * MarketOrderOrderPriceDistribution = new DistributionExponential(myRNG, meanPriceLagLP) ;
 		MarketMaker * myMarketMaker = new MarketMaker
-               (
-               myMarket,
-               MarketOrderActionTimeDistribution,
-               MarketOrderOrderVolumeDistribution,
-               MarketOrderOrderPriceDistribution,
-               buyFrequencyMM,
-               1,
-               cancelBuyFrequencyMM,
-               cancelSellFrequencyMM,
-               uniformCancellationProbabilityMM,
-               0.1,
-               activateHFTPriority
-               ) ;
+			(
+			myMarket,
+			MarketOrderActionTimeDistribution,
+			MarketOrderOrderVolumeDistribution,
+			MarketOrderOrderPriceDistribution,
+			buyFrequencyMM,
+			1,
+			cancelBuyFrequencyMM,
+			cancelSellFrequencyMM,
+			uniformCancellationProbabilityMM,
+			0.1,
+			activateHFTPriority
+			) ;
 		myMarket->registerAgent(myMarketMaker);
 
 		Sleep(200);
 
-		
+
 		// Simulate market
 		std::cout << "Simulation starts. " << std::endl ;
 		currentTime = simulationTimeStart ;
 		i=1;
-	
+
 		std::cout 
 			<< "Time 0 : [bid ; ask] = " 
 			<< "[" << myMarket->getOrderBook(1)->getBidPrice()/100.0 << " ; "
@@ -348,15 +349,15 @@ int main(int argc, char* argv[])
 		closingPrice = historicPrices.back();
 		transactionsTimes = myMarket->getOrderBook(1)->getTransactionsTimes();
 		plotter2->plotPrices(transactionsTimes,historicPrices);
-	
+
 		outFileCashLP << cashLP/100.0 << std::endl;
 		outFileCashMM << cashMM/100.0 << std::endl;
 		outFileCashNT << cashNT/100.0 << std::endl;
 		outFileClosingPrices << closingPrice << std::endl;
 
 		std::cout<<"done!!!" << std::endl;
-	//	int b;
-	//	std::cin>>b;
+		//	int b;
+		//	std::cin>>b;
 		actors.interrupt_all();
 		delete myMarket;
 		myMarket = 0;
