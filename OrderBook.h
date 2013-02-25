@@ -172,6 +172,8 @@ public:
 	int getNbOrder();
 
 	double getQuantityExchanged();
+
+	int getNbOrderMM();
 	
 
 private:
@@ -254,6 +256,7 @@ private:
 	int ask;
 
 	int nbOrder;
+	int nbOrderMM;
 
 	double quantityExchanged;
 

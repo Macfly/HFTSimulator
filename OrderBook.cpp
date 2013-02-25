@@ -33,6 +33,7 @@ OrderBook::OrderBook(Market *a_market, int a_identifier, int a_tickSize, int a_d
 	ask = a_defaultAsk;
 	nbOrder = 0;
 	quantityExchanged = 0;
+	nbOrderMM = 0;
 }
 OrderBook::~OrderBook()
 {
@@ -114,6 +115,10 @@ int OrderBook::getNbOrder(){
 	return nbOrder;
 }
 
+int OrderBook::getNbOrderMM(){
+	return nbOrderMM;
+}
+
 double OrderBook::getQuantityExchanged(){
 	return quantityExchanged;
 }
@@ -171,13 +176,11 @@ void OrderBook::runOrderBook()
 			default:
 				break;
 			} 
-
-			//std::cout << "after processe order " << std::endl;
-			//if(m_storeOrderHistory) m_orderHistory.push_back(orderToExecute) ;
 			m_linkToMarket->updateCurrentTime(orderToExecute.m_time);
 			m_linkToMarket->notifyAllAgents();
+			if(orderToExecute.getOwner() == 3)
+				nbOrderMM++;
 			nbOrder++;
-			//std::cout << "after notity" << std::endl;
 		}
 	}
 }

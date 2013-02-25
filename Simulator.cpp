@@ -110,7 +110,7 @@ double buyFrequencyLOT = 0.5;
 int nInitialOrders = 300;
 double simulationTimeStart = 0 ;
 double simulationTimeStop = 10000;
-double printIntervals = 2000; //900 ;
+double printIntervals = 2000000; //900 ;
 double impactMeasureLength = 60 ;
 
 bool activateHFTPriority = true;
@@ -338,6 +338,8 @@ int main(int argc, char* argv[])
 		std::cout<<"NB Order processed : " << myMarket->getOrderBook(1)->getNbOrder()<<std::endl;
 		std::cout<<"NB Order/second : " << myMarket->getOrderBook(1)->getNbOrder() /total_time_ticks <<std::endl;
 		std::cout<<"Quantity exchanged : " << myMarket->getOrderBook(1)->getQuantityExchanged() <<std::endl;
+
+		std::cout<<"NB Order MM : " << myMarket->getOrderBook(1)->getNbOrderMM()<<std::endl;
 
 		std::cout<<"CASH POSITIONS : "<<std::endl;
 		std::cout << "LP: CASH =\t" << cashLP/100.0<<std::endl;
