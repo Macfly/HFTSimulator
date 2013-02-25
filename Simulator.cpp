@@ -2,6 +2,8 @@
 #include <iostream>
 #include <sstream>
 
+#include<windows.h>
+
 #include "Agent.h"
 #include "Market.h"
 #include "Order.h"
@@ -107,8 +109,8 @@ double buyFrequencyLOT = 0.5;
 
 int nInitialOrders = 300;
 double simulationTimeStart = 0 ;
-double simulationTimeStop = 100000;
-double printIntervals = 20000000; //900 ;
+double simulationTimeStop = 10000;
+double printIntervals = 2000; //900 ;
 double impactMeasureLength = 60 ;
 
 bool activateHFTPriority = true;
@@ -228,6 +230,9 @@ int main(int argc, char* argv[])
                activateHFTPriority
                ) ;
 		myMarket->registerAgent(myMarketMaker);
+
+		Sleep(200);
+
 		
 		// Simulate market
 		std::cout << "Simulation starts. " << std::endl ;
