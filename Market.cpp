@@ -23,9 +23,9 @@ Market::Market(std::string a_marketName)
 
 	// clean/create output directory
 	std::string outputDirectoryName ;
-	outputDirectoryName = "./res/" + a_marketName ;
-	boost::filesystem::remove_all(outputDirectoryName.c_str() ) ;
-	boost::filesystem::create_directory(outputDirectoryName.c_str() ) ;
+//	outputDirectoryName = "./res/" + a_marketName ;
+//	boost::filesystem::remove_all(outputDirectoryName.c_str() ) ;
+//	boost::filesystem::create_directory(outputDirectoryName.c_str() ) ;
 }
 
 Market::~Market()

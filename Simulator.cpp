@@ -115,7 +115,7 @@ double impactMeasureLength = 60 ;
 
 bool activateHFTPriority = true;
 
-int nbSimulMonteCarlo=1;
+int nbSimulMonteCarlo=500;
 
 Market *myMarket;
 
@@ -126,10 +126,10 @@ void runOrderBook(){
 int main(int argc, char* argv[])
 {
 
-	Plot * plotter2 = new Plot() ;
+//	Plot * plotter2 = new Plot() ;
 	concurrency::concurrent_vector<double> transactionsTimes;
 	concurrency::concurrent_vector<int> historicPrices ;
-	Plot * plotter = new Plot() ;
+//	Plot * plotter = new Plot() ;
 	double currentTime ;
 	int i ;
 	int nbLPStocks;
@@ -150,6 +150,9 @@ int main(int argc, char* argv[])
 	std::ofstream outFileCashMM("cashMM.data", std::ios::app);
 	std::ofstream outFileCashNT("cashNT.data", std::ios::app);
 	std::ofstream outFileClosingPrices("closingPrices.data", std::ios::app);
+	std::ofstream outFileNbOrdersMM("nbOrdersMM.data", std::ios::app);
+	std::ofstream outFileQuantityExchanged("quantityExchanged.data", std::ios::app);
+	std::ofstream outFileNbOrdersProcessed("nbOrdersProcessed.data", std::ios::app);
 
 	for(int k=0; k<nbSimulMonteCarlo ; k++){
 		myMarket = new Market(oss_marketName.str());
@@ -234,7 +237,6 @@ int main(int argc, char* argv[])
 
 		Sleep(200);
 
-
 		// Simulate market
 		std::cout << "Simulation starts. " << std::endl ;
 		currentTime = simulationTimeStart ;
@@ -282,7 +284,7 @@ int main(int argc, char* argv[])
 						<< myMarketMaker->getPendingOrders()->size() << "]"
 						<< std::endl;
 					// Plot order book
-					plotOrderBook(myMarket,plotter,1);
+				//	plotOrderBook(myMarket,plotter,1);
 					// Agents'portfolios
 					std::cout << "LP: nStock=\t" << myLiquidityProvider->getStockQuantity(1) 
 						<< "\t Cash=\t" << myLiquidityProvider->getNetCashPosition() / 100.0 << std::endl ;				
@@ -350,12 +352,16 @@ int main(int argc, char* argv[])
 		//Closing price : the last element of historicPrices.
 		closingPrice = historicPrices.back();
 		transactionsTimes = myMarket->getOrderBook(1)->getTransactionsTimes();
-		plotter2->plotPrices(transactionsTimes,historicPrices);
+	
+		//plotter2->plotPrices(transactionsTimes,historicPrices);
 
 		outFileCashLP << cashLP/100.0 << std::endl;
 		outFileCashMM << cashMM/100.0 << std::endl;
 		outFileCashNT << cashNT/100.0 << std::endl;
 		outFileClosingPrices << closingPrice << std::endl;
+		outFileNbOrdersMM << myMarket->getOrderBook(1)->getNbOrderMM() << std::endl;
+		outFileQuantityExchanged << myMarket->getOrderBook(1)->getQuantityExchanged() << std::endl;
+		outFileNbOrdersProcessed <<  myMarket->getOrderBook(1)->getNbOrder() << std::endl;
 
 		std::cout<<"done!!!" << std::endl;
 		//	int b;
@@ -394,6 +400,7 @@ int main(int argc, char* argv[])
 	outFileCashLP.close();
 	outFileCashMM.close();
 	outFileCashNT.close();
+	outFileNbOrdersMM.close();
 	std::cout << "ça marche" << std::endl;
 	int yo;
 	std::cin >> yo;
