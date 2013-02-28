@@ -109,13 +109,13 @@ double buyFrequencyLOT = 0.5;
 
 int nInitialOrders = 300;
 double simulationTimeStart = 0 ;
-double simulationTimeStop = 10000;
-double printIntervals = 2000000; //900 ;
+double simulationTimeStop = 200;
+double printIntervals = 10; //900 ;
 double impactMeasureLength = 60 ;
 
 bool activateHFTPriority = true;
 
-int nbSimulMonteCarlo=500;
+int nbSimulMonteCarlo=1;
 
 Market *myMarket;
 
@@ -126,10 +126,10 @@ void runOrderBook(){
 int main(int argc, char* argv[])
 {
 
-//	Plot * plotter2 = new Plot() ;
+	Plot * plotter2 = new Plot() ;
 	concurrency::concurrent_vector<double> transactionsTimes;
 	concurrency::concurrent_vector<int> historicPrices ;
-//	Plot * plotter = new Plot() ;
+	Plot * plotter = new Plot() ;
 	double currentTime ;
 	int i ;
 	int nbLPStocks;
@@ -284,7 +284,7 @@ int main(int argc, char* argv[])
 						<< myMarketMaker->getPendingOrders()->size() << "]"
 						<< std::endl;
 					// Plot order book
-				//	plotOrderBook(myMarket,plotter,1);
+						plotOrderBook(myMarket,plotter,1);
 					// Agents'portfolios
 					std::cout << "LP: nStock=\t" << myLiquidityProvider->getStockQuantity(1) 
 						<< "\t Cash=\t" << myLiquidityProvider->getNetCashPosition() / 100.0 << std::endl ;				
@@ -352,8 +352,8 @@ int main(int argc, char* argv[])
 		//Closing price : the last element of historicPrices.
 		closingPrice = historicPrices.back();
 		transactionsTimes = myMarket->getOrderBook(1)->getTransactionsTimes();
-	
-		//plotter2->plotPrices(transactionsTimes,historicPrices);
+
+		plotter2->plotPrices(transactionsTimes,historicPrices);
 
 		outFileCashLP << cashLP/100.0 << std::endl;
 		outFileCashMM << cashMM/100.0 << std::endl;
@@ -364,8 +364,8 @@ int main(int argc, char* argv[])
 		outFileNbOrdersProcessed <<  myMarket->getOrderBook(1)->getNbOrder() << std::endl;
 
 		std::cout<<"done!!!" << std::endl;
-		//	int b;
-		//	std::cin>>b;
+		int b;
+		std::cin>>b;
 		actors.interrupt_all();
 		delete myMarket;
 		myMarket = 0;
@@ -402,8 +402,6 @@ int main(int argc, char* argv[])
 	outFileCashNT.close();
 	outFileNbOrdersMM.close();
 	std::cout << "ça marche" << std::endl;
-	int yo;
-	std::cin >> yo;
 
 	return 0;
 }
