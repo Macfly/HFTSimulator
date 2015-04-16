@@ -12,21 +12,26 @@
 
 class Exception : public std::exception
 {
-	public:
-		/*! \brief Generic Exception constructor
+public:
+	/*! \brief Generic Exception constructor
 		 *
 		 *  \param a_message description of the exception. This message can be catched by the member function what().
 		 *  @see what()
 		 */
-		Exception(const char *a_message);
-		virtual ~Exception() throw(){};
-		/*! \brief returns the string describing the exception
+	Exception(const char* a_message);
+
+	virtual ~Exception() throw()
+	{
+	};
+
+	/*! \brief returns the string describing the exception
 		 *
 		 */
-		virtual const char * what();
-	private:
-		
-		const char *m_message;
+	virtual const char* what();
+private:
+
+	const char* m_message;
 };
 
 #endif //__EXCEPTIONS__H__
+

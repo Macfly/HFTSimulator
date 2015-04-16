@@ -1,11 +1,11 @@
 #include "Exceptions.h"
 
-Exception::Exception(const char *a_message):exception()
+Exception::Exception(const char* a_message):exception()
 {
 	m_message = a_message;
 }
 
-const char * Exception::what()
+const char* Exception::what()
 {
 	return m_message;
 }

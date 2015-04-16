@@ -56,17 +56,17 @@ typedef enum
  */
 class ExecutionHistory
 {
-	public:
-		ExecutionHistory(double a_executionTime,int a_executionQuantity,int a_executionPrice)
-		{
-			m_executionPrice		= a_executionPrice;
-			m_executionQuantity		= a_executionQuantity;
-			m_executionTime			= a_executionTime;
-			
-		}
-		int m_executionPrice;
-		int m_executionQuantity;
-		double m_executionTime;
+public:
+	ExecutionHistory(double a_executionTime, int a_executionQuantity, int a_executionPrice)
+	{
+		m_executionPrice = a_executionPrice;
+		m_executionQuantity = a_executionQuantity;
+		m_executionTime = a_executionTime;
+	}
+
+	int m_executionPrice;
+	int m_executionQuantity;
+	double m_executionTime;
 };
 
 /*! \brief Storage class for limit orders
@@ -77,20 +77,21 @@ class ExecutionHistory
  */
 class LimitOrders
 {
-	public:
-		LimitOrders(int a_bid,int a_bidQ,int a_ask,int a_askQ)
-		{
-			m_bid		= a_bid;
-			m_bidQ		= a_bidQ;
-			m_ask		= a_ask;
-			m_askQ		= a_askQ;
-			
-		}
-		int m_bid;
-		int m_bidQ;
-		int m_ask;
-		int m_askQ;
+public:
+	LimitOrders(int a_bid, int a_bidQ, int a_ask, int a_askQ)
+	{
+		m_bid = a_bid;
+		m_bidQ = a_bidQ;
+		m_ask = a_ask;
+		m_askQ = a_askQ;
+	}
+
+	int m_bid;
+	int m_bidQ;
+	int m_ask;
+	int m_askQ;
 };
+
 /*! \brief Storage class for the order book history
  *
  *  The members of this class correspond to the headers of the order book history that will be printed in csv files
@@ -98,21 +99,23 @@ class LimitOrders
  */
 class OrderBookHistory
 {
-	public:
-		OrderBookHistory(double a_datexl,double a_timeStamp, std::vector<LimitOrders> a_limitOrders,int a_last,int a_lastQ)
-		{
-			m_datexl = a_datexl;
-			m_timeStamp = a_timeStamp;
-			m_limitOrders = a_limitOrders;
-			m_last = a_last;
-			m_lastQ = a_lastQ;
-		}
-		double m_datexl;
-		double m_timeStamp;
-		std::vector<LimitOrders> m_limitOrders;
-		int m_last;
-		int m_lastQ;
+public:
+	OrderBookHistory(double a_datexl, double a_timeStamp, std::vector<LimitOrders> a_limitOrders, int a_last, int a_lastQ)
+	{
+		m_datexl = a_datexl;
+		m_timeStamp = a_timeStamp;
+		m_limitOrders = a_limitOrders;
+		m_last = a_last;
+		m_lastQ = a_lastQ;
+	}
+
+	double m_datexl;
+	double m_timeStamp;
+	std::vector<LimitOrders> m_limitOrders;
+	int m_last;
+	int m_lastQ;
 };
+
 /*! \mainpage Simulator
  *
  * \section intro_sec The project
@@ -139,3 +142,4 @@ class OrderBookHistory
 
 
 #endif // __TYPES__H__
+

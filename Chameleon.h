@@ -29,24 +29,28 @@
 
 #include <string>
 
-class Chameleon {
+class Chameleon
+{
 public:
-  Chameleon() {};
-  explicit Chameleon(const std::string&);
-  explicit Chameleon(double);
-  explicit Chameleon(const char*);
+	Chameleon()
+	{
+	};
 
-  Chameleon(const Chameleon&);
-  Chameleon& operator=(Chameleon const&);
+	explicit Chameleon(const std::string&);
+	explicit Chameleon(double);
+	explicit Chameleon(const char*);
 
-  Chameleon& operator=(double);
-  Chameleon& operator=(std::string const&);
+	Chameleon(const Chameleon&);
+	Chameleon& operator=(Chameleon const&);
+
+	Chameleon& operator=(double);
+	Chameleon& operator=(std::string const&);
 
 public:
-  operator std::string() const;
-  operator double     () const;
+	operator std::string() const;
+	operator double() const;
 private:
-  std::string value_;
+	std::string value_;
 };
 
 #endif

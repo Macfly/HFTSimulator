@@ -19,19 +19,19 @@ public:
 	*  \param a_buyFrequency Frequency of buy orders in percentage.
 	*  cancellationFrequency+buyFrequency+sellFrequency = 1
 	*/
-	MarketMaker(Market * a_market, 
-		Distribution * a_ActionTimeDistribution,
-		Distribution * a_OrderVolumeDistribution,
-		Distribution * a_OrderPriceDistribution,
-		double a_buyFrequency,
-		int a_favouriteStockIdentifier,
-		double a_cancelBuyFrequency,
-		double a_cancelSellFrequency,
-		double a_cancelProbability,
-		double a_volumeProportion,
-		bool activateHFTPriority
-		) ;
-	virtual ~MarketMaker() ;
+	MarketMaker(Market* a_market,
+	            Distribution* a_ActionTimeDistribution,
+	            Distribution* a_OrderVolumeDistribution,
+	            Distribution* a_OrderPriceDistribution,
+	            double a_buyFrequency,
+	            int a_favouriteStockIdentifier,
+	            double a_cancelBuyFrequency,
+	            double a_cancelSellFrequency,
+	            double a_cancelProbability,
+	            double a_volumeProportion,
+	            bool activateHFTPriority
+	);
+	virtual ~MarketMaker();
 
 public:
 	/*! \brief gets action time for the agent
@@ -46,7 +46,7 @@ public:
 	* \param currentTime time stamp
 	*
 	*/
-	virtual void makeAction(int a_OrderBookId, double currentTime);	
+	virtual void makeAction(int a_OrderBookId, double currentTime);
 
 	/*! \brief processes information after the agent is notified of a market event
 	*
@@ -60,7 +60,7 @@ protected:
 	/*! \brief returns the order type
 	*
 	* The order type is generated randomly and can be a limit sell or a limit buy order, or a cancelation of existing orders.
-	*/	
+	*/
 	virtual OrderType getOrderType() const;
 	/*! \brief returns the order volume
 	*
@@ -73,13 +73,13 @@ protected:
 	* The order volume is generated randomly according to a specified distribution depending on the price.
 	*/
 
-	virtual int getOrderVolume(double price, int a_OrderBookId , OrderType orderType) const ;
+	virtual int getOrderVolume(double price, int a_OrderBookId, OrderType orderType) const;
 
 	/*! \brief returns the order price
 	*
 	* The limit order price is generated randomly according to a specified distribution.
 	*/
-	virtual int getOrderPrice (int a_OrderBookId, OrderType a_OrderType) const;
+	virtual int getOrderPrice(int a_OrderBookId, OrderType a_OrderType) const;
 
 	/*! \brief go through the order book and cancel order with uniform probability
 	*
@@ -92,23 +92,21 @@ private:
 
 	double m_cancelBuyFrequency;
 	double m_cancelSellFrequency;
-	double m_buyFrequency ;
+	double m_buyFrequency;
 	double m_sellFrequency;
-	double m_cancelProbability ;
+	double m_cancelProbability;
 
-	DistributionUniform * m_cancelDistribution ;
+	DistributionUniform* m_cancelDistribution;
 	/// Distribution of the interval times between two consecutive actions
-	Distribution * m_ActionTimeDistribution ;
+	Distribution* m_ActionTimeDistribution;
 	/// Distribution of the volume of the orders
-	Distribution * m_OrderVolumeDistribution ;
+	Distribution* m_OrderVolumeDistribution;
 	/// Distribution of the lag price relative to the opposite best limit when submitting a limit order
-	Distribution * m_OrderPriceDistribution ;
+	Distribution* m_OrderPriceDistribution;
 
-	DistributionUniform * m_OrderTypeDistribution ;
+	DistributionUniform* m_OrderTypeDistribution;
 
 	double m_VolumeProportion;
 
 	bool m_activateHFTPriority;
-
-
 };

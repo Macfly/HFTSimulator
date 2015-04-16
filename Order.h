@@ -14,9 +14,9 @@ class Order
 	friend class Agent;
 	friend class OrderBook;
 	friend class Market;
-	public:
-		Order();
-		/*! \brief Generic Agent constructor
+public:
+	Order();
+	/*! \brief Generic Agent constructor
 		 *
 		 *  \param a_asset asset identifier
 		 *  \param a_owner agent identifier
@@ -27,51 +27,51 @@ class Order
 		 *  \param a_globalOrderIdentifier given by the market : a unique order identifier 
 		 *
 		 */
-		Order(int a_asset , int a_owner , double	a_time , int a_price,
-					int	a_volume , OrderType a_type ,
-					int a_globalOrderIdentifier, OrderState state);
+	Order(int a_asset, int a_owner, double a_time, int a_price,
+	      int a_volume, OrderType a_type,
+	      int a_globalOrderIdentifier, OrderState state);
 
-		virtual ~Order();
+	virtual ~Order();
 
-		int getUnderlying() ;
-		int getIdentifier() ;
-		int getOwner() ;
-		int getVolume() ;
-		int getInitialVolume() ;
-		int getPrice() ;
-		double getTime() ;
-		OrderType getType() ;
-		void printOrder() ;
-		
-		void setPrice (int a_price) ;
-		void setVolume(int a_volume);
-		void setType(OrderType a_type) ;
+	int getUnderlying();
+	int getIdentifier();
+	int getOwner();
+	int getVolume();
+	int getInitialVolume();
+	int getPrice();
+	double getTime();
+	OrderType getType();
+	void printOrder();
 
-		void setState(OrderState state);
-		OrderState getState();
+	void setPrice(int a_price);
+	void setVolume(int a_volume);
+	void setType(OrderType a_type);
 
-		int getPriority();
-		void setPriority(int priority);
+	void setState(OrderState state);
+	OrderState getState();
 
-	private:
-		
-		int				m_asset;
-		int				m_owner;
-		double			m_time;
-		int				m_price;
-		int				m_initialVolume;
-		int				m_volume;
-		OrderType		m_type;
-		OrderState		m_state;
-		int				m_globalOrderIdentifier;
+	int getPriority();
+	void setPriority(int priority);
 
-		double			m_newBid;
-		double			m_newAsk;
+private:
 
-		int				m_priority;
+	int m_asset;
+	int m_owner;
+	double m_time;
+	int m_price;
+	int m_initialVolume;
+	int m_volume;
+	OrderType m_type;
+	OrderState m_state;
+	int m_globalOrderIdentifier;
 
-		std::vector < ExecutionHistory> m_executionHistory;
+	double m_newBid;
+	double m_newAsk;
 
+	int m_priority;
+
+	std::vector<ExecutionHistory> m_executionHistory;
 };
 
 #endif // __ORDER__H__
+

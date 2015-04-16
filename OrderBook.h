@@ -15,6 +15,7 @@
 
 //class Order;
 class Market;
+
 /*! \brief Generic order book class
 *
 *  The class implements an order book, on a given asset.
@@ -32,12 +33,11 @@ public:
 	*  \param a_defaultAsk same as for bids
 	*
 	*/
-	OrderBook(Market *a_market, int a_identifier, int a_tickSize, int a_defaultBid, int a_defaultAsk);
+	OrderBook(Market* a_market, int a_identifier, int a_tickSize, int a_defaultBid, int a_defaultAsk);
 	virtual ~OrderBook();
 
 
-
-	int getIdentifier() const ;
+	int getIdentifier() const;
 
 	/*! \brief returns the ask price
 	*
@@ -126,7 +126,7 @@ public:
 	/*! \brief prepares data to be plotted in Gnuplot
 	*
 	*/
-	void OrderBook::getOrderBookForPlot(std::vector<int> &a_price, std::vector<int> &a_priceQ, std::vector<int> &a_priceMM, std::vector<int> &a_priceQMM);
+	void OrderBook::getOrderBookForPlot(std::vector<int>& a_price, std::vector<int>& a_priceQ, std::vector<int>& a_priceMM, std::vector<int>& a_priceQMM);
 
 	/*! \brief returns the bid Queue
 	*
@@ -143,27 +143,26 @@ public:
 	*/
 	//int getNumberOfOrders(int a_agentIdentifier, int a_price) const;
 	//int getTotalVolumeAtPrice(int a_price) const;
-	int getTotalAskQuantity() ;
-	int getTotalBidQuantity() ;
+	int getTotalAskQuantity();
+	int getTotalBidQuantity();
 	//int getBidPriceAtLevel(int levelMax) ;
 	//int getAskPriceAtLevel(int levelMax) ;
 
-	const std::vector<OrderBookHistory>  & getOrderBookHistory() const;
-	const std::vector<Order>  & getOrderHistory() const;
+	const std::vector<OrderBookHistory>& getOrderBookHistory() const;
+	const std::vector<Order>& getOrderHistory() const;
 
 
-
-	Market * getLinkToMarket() ;
+	Market* getLinkToMarket();
 
 	void cleanOrderBook();
 
 	void setDefaultBidAsk(int bid, int ask);
 
-	void pushOrder(Order &order);
+	void pushOrder(Order& order);
 
 	void OrderBook::closeOrderBook();
 
-	void quickSort(std::vector<int> &price, std::vector<int> &quantity, int left, int right);
+	void quickSort(std::vector<int>& price, std::vector<int>& quantity, int left, int right);
 
 	void activateHFTPriority(bool activate);
 
@@ -174,44 +173,43 @@ public:
 	double getQuantityExchanged();
 
 	int getNbOrderMM();
-	
+
 
 private:
 	/*! cancel a specific given order
 	* 
 	*/
-	void processSellCancellation(int a_agentIdentifier,int a_orderIdentifier,  int a_price, double a_time) ;
+	void processSellCancellation(int a_agentIdentifier, int a_orderIdentifier, int a_price, double a_time);
 
-	void processBuyCancellation(int a_agentIdentifier,int a_orderIdentifier, int a_price, double a_time) ;
+	void processBuyCancellation(int a_agentIdentifier, int a_orderIdentifier, int a_price, double a_time);
 
 
 	void printOrderBookHistoryOnTheFly(double a_time);
 	void storeOrderBookHistory(double a_time);
 	OrderBookHistory buildAHistoryLine(double a_time) const;
-	void printLineOfHistory(OrderBookHistory a_line,std::ofstream & a_outFile);
-	void processLimitBuyOrder(Order  &a_order);
-	void processLimitSellOrder(Order  &a_order);
-	void processMarketBuyOrder(Order  &a_order);
-	void processMarketSellOrder(Order  &a_order);
-	void printHeader(std::ofstream & a_outFile) const;
+	void printLineOfHistory(OrderBookHistory a_line, std::ofstream& a_outFile);
+	void processLimitBuyOrder(Order& a_order);
+	void processLimitSellOrder(Order& a_order);
+	void processMarketBuyOrder(Order& a_order);
+	void processMarketSellOrder(Order& a_order);
+	void printHeader(std::ofstream& a_outFile) const;
 
-	void updateAskPrice() ;
-	void updateBidPrice() ;
+	void updateAskPrice();
+	void updateBidPrice();
 
-	std::map< int , std::list < Order > > getBidQueue() const;
+	std::map<int, std::list<Order>> getBidQueue() const;
 
 	/*! \brief returns the ask Queue
 	*
 	*/
-	std::map< int , std::list < Order > > getAskQueue() const;
-
+	std::map<int, std::list<Order>> getAskQueue() const;
 
 
 private:
 	int m_identifier;
-	Market * m_linkToMarket; // DO NOT DELETE, JUST A LINK
+	Market* m_linkToMarket; // DO NOT DELETE, JUST A LINK
 
-	int m_tickSize ;
+	int m_tickSize;
 	int m_defaultBid;
 	int m_defaultAsk;
 	int m_last;
@@ -221,25 +219,25 @@ private:
 	// And while canceling, we can cancel an order situated in the middle of the container
 	// hence the choice of a list
 	// But Only queue-type operations of lists will be used when pushing (push_back), and executing(pop_front)
-	std::map< int , std::list < Order > > m_bids;
-	std::map< int , std::list < Order > > m_asks;
+	std::map<int, std::list<Order>> m_bids;
+	std::map<int, std::list<Order>> m_asks;
 
 	// Parameters for keeping history of orders
 	std::vector<OrderBookHistory> m_orderBookHistory;
 	std::vector<Order> m_orderHistory;
 	bool m_storeOrderBookHistory;
-	bool m_storeOrderHistory ;
+	bool m_storeOrderHistory;
 	bool m_printHistoryonTheFly;
 	int m_maxDepth;
 	bool m_headerPrinted;
 
 	//contains the prices of the asset
-	concurrency::concurrent_vector <int> m_historicPrices;
+	concurrency::concurrent_vector<int> m_historicPrices;
 	//contains the times of transactions (Market orders)
-	concurrency::concurrent_vector <double> m_transactionsTimes;
+	concurrency::concurrent_vector<double> m_transactionsTimes;
 
 
-	concurrency::concurrent_priority_queue <Order, OrderPriority> orders;
+	concurrency::concurrent_priority_queue<Order, OrderPriority> orders;
 	concurrency::concurrent_unordered_map<int, int> quantity;
 	// A map of map containing all prices and volumes for each agent. The first key is the agent ID and the second the price.
 	concurrency::concurrent_unordered_map<int, concurrency::concurrent_unordered_map<int, int>> agentsOrders;
@@ -259,16 +257,20 @@ private:
 	int nbOrderMM;
 
 	double quantityExchanged;
-
 };
+
 template <typename K, typename V>
-V get_value_map(const  concurrency::concurrent_unordered_map <K,V> & m, const K & key, const V & defval ) {
-	typename concurrency::concurrent_unordered_map<K,V>::const_iterator it = m.find( key );
-	if ( it == m.end() ) {
+V get_value_map(const concurrency::concurrent_unordered_map<K, V>& m, const K& key, const V& defval)
+{
+	typename concurrency::concurrent_unordered_map<K, V>::const_iterator it = m.find(key);
+	if (it == m.end())
+	{
 		return defval;
 	}
-	else {
+	else
+	{
 		return it->second;
 	}
 }
 #endif // __ORDERBOOK__H__
+

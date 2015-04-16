@@ -18,28 +18,33 @@ typedef enum
 	MARKET,
 	LIMIT,
 	ALL
-} TimeSeriesType ;
+} TimeSeriesType;
 
 
 class Stats
 {
-	public :
-		Stats(OrderBook * myOrderBook);
-		virtual ~Stats();
+public :
+	Stats(OrderBook* myOrderBook);
+	virtual ~Stats();
 
-		std::vector<double> getPriceTimeSeries(TimeSeriesType dataType, double samplePeriod);
-		std::vector<double> getOrderSignsTimeSeries(TimeSeriesType dataType);
-		void printTimeSeries(TimeSeriesType dataType, double samplePeriod);
-		void printAutocorrelation(std::string tag, std::vector<double> data, int lagMax, int deltaLag);
-		void plotPDF(const std::string name, const std::vector<double> data, int nBins = -1) {};
-		void plotNormalizedPDF(const std::string name, const std::vector<double> data, int nBins = -1) {};
+	std::vector<double> getPriceTimeSeries(TimeSeriesType dataType, double samplePeriod);
+	std::vector<double> getOrderSignsTimeSeries(TimeSeriesType dataType);
+	void printTimeSeries(TimeSeriesType dataType, double samplePeriod);
+	void printAutocorrelation(std::string tag, std::vector<double> data, int lagMax, int deltaLag);
 
-		void printSummary() ;
+	void plotPDF(const std::string name, const std::vector<double> data, int nBins = -1)
+	{
+	};
 
-	private :
-		OrderBook * m_OrderBook ;
-		std::map<int,double> getAutocorrelation(std::vector<double> data, int lagMax, int deltaLag) ;
+	void plotNormalizedPDF(const std::string name, const std::vector<double> data, int nBins = -1)
+	{
+	};
 
+	void printSummary();
+
+private :
+	OrderBook* m_OrderBook;
+	std::map<int, double> getAutocorrelation(std::vector<double> data, int lagMax, int deltaLag);
 };
 
 
