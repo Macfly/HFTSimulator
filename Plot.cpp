@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdio>
 #include "Plot.h"
+#include <algorithm>
 
 
 Plot::Plot()

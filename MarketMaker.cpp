@@ -34,7 +34,8 @@ MarketMaker::MarketMaker(
 }
 MarketMaker::~MarketMaker() 
 {
-
+	delete m_OrderTypeDistribution;
+	delete m_cancelDistribution;
 }
 double MarketMaker::getNextActionTime() const
 {

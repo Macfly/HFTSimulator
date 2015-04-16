@@ -34,7 +34,8 @@ LiquidityProvider::LiquidityProvider(
 }
 LiquidityProvider::~LiquidityProvider() 
 {
-
+	delete m_OrderTypeDistribution;
+	delete m_cancelDistribution;
 }
 double LiquidityProvider::getNextActionTime() const
 {

@@ -22,10 +22,9 @@ Market::Market(std::string a_marketName)
 	m_RNG = new RandomNumberGenerator();
 
 	// clean/create output directory
-	std::string outputDirectoryName ;
-	outputDirectoryName = "./res/" + a_marketName ;
-	boost::filesystem::remove_all(outputDirectoryName.c_str() ) ;
-	boost::filesystem::create_directory(outputDirectoryName.c_str() ) ;
+	/*boost::filesystem::path dir("./res//" + a_marketName);
+	remove_all(dir);
+	create_directory(dir);*/
 }
 
 Market::~Market()
@@ -40,6 +39,7 @@ Market::~Market()
 		m_assetOrderBooks.clear();
 	}
 	delete m_newsServer;
+	delete m_RNG;
 }
 double Market::getCurrentTime()
 {
